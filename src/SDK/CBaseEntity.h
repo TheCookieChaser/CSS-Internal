@@ -87,6 +87,8 @@ public:
 		return *reinterpret_cast<int*>((uintptr_t)this + m_fFlags);
 	}
 
+
+
 	Vector GetEyePosition()
 	{
 		return GetVecOrigin() + GetVecViewOffset();

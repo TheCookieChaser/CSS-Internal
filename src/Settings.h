@@ -25,6 +25,7 @@ namespace Settings
 		extern bool SnapLine;
 		extern bool Name;
 		extern bool Weapon;
+		extern bool FarESP;
 	}
 	namespace Misc
 	{

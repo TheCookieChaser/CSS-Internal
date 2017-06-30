@@ -90,6 +90,7 @@ void Menu::VisualsTab()
 	ImGui::Checkbox("Snap Lines", &Settings::Visuals::SnapLine);
 	ImGui::Checkbox("Player Names", &Settings::Visuals::Name);
 	ImGui::Checkbox("Player Weapons", &Settings::Visuals::Weapon);
+	ImGui::Checkbox("Far ESP", &Settings::Visuals::FarESP);
 }
 
 void Menu::MiscTab()

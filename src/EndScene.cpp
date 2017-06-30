@@ -72,10 +72,11 @@ HRESULT STDMETHODCALLTYPE EndScene_Hooked(IDirect3DDevice9* vDevice)
 		ImGui::GetIO().MouseDrawCursor = Settings::Menu::Opened;
 		ImGui_ImplDX9_NewFrame();
 
+		Menu::EndScene();
+
 		DrawManager->BeginRendering();
 
 		Visuals::EndScene();
-		Menu::EndScene();
 
 		ImGui::Render();
 

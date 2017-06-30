@@ -45,14 +45,29 @@ DWORD WINAPI CheatThread(LPVOID lpvReserved)
 	//NetVarManager->DumpNetvars();
 	Initialize_Hooks();
 
+	cvar->ConsoleColorPrintf(Color(150, 255, 150), "Injected Sucessfully!\n");
+
 	while (!(GetAsyncKeyState(VK_END) & 0x8000))
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(150));
+		if (Settings::Visuals::FarESP)
+		{
+			static DWORD dwDrawOnRadar = *(DWORD*)(Tools::FindSignature("client.dll", "A1 ? ? ? ? 85 C0 74 06 05") + 1);
+			if (dwDrawOnRadar)
+			{
+				for (int i = 0; i < 32; i++)
+				{
+					BYTE* pDrawOnRadar = (BYTE*)((*(DWORD*)dwDrawOnRadar) + 0xD8D + i);
+					*pDrawOnRadar = 1;
+				}
+			}
+		}
 	}
 
+	cvar->ConsoleColorPrintf(Color(150, 255, 150), "Unloading...\n");
 	FreeConsole();
 	Restore_Hooks();
 	Sleep(1000);
+	cvar->ConsoleColorPrintf(Color(150, 255, 150), "Unloaded Sucessfully!\n");
 	FreeLibraryAndExitThread(dll, NULL);
 }
 

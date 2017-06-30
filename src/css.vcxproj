@@ -133,6 +133,7 @@
     <ClCompile Include="NetVarManager.cpp" />
     <ClCompile Include="Reset.cpp" />
     <ClCompile Include="SDK\characterset.cpp" />
+    <ClCompile Include="SDK\Convar.cpp" />
     <ClCompile Include="SDK\CRC.cpp" />
     <ClCompile Include="SDK\UtlBuffer.cpp" />
     <ClCompile Include="SDK\UtlString.cpp" />
@@ -170,7 +171,9 @@
     <ClInclude Include="SDK\characterset.h" />
     <ClInclude Include="SDK\CInput.h" />
     <ClInclude Include="SDK\Color.h" />
+    <ClInclude Include="SDK\Convar.h" />
     <ClInclude Include="SDK\CRC.h" />
+    <ClInclude Include="SDK\IConVar.h" />
     <ClInclude Include="SDK\ICVar.h" />
     <ClInclude Include="SDK\Defines.h" />
     <ClInclude Include="SDK\IAppSystem.h" />

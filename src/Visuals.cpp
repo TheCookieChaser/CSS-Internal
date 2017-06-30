@@ -54,7 +54,7 @@ void Visuals::DrawESP()
 		auto pEntity = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(i));
 
 		if (!pEntity
-			|| pEntity->IsDormant()
+			|| (!Settings::Visuals::FarESP && pEntity->IsDormant())
 			|| pEntity->GetHealth() <= 0
 			|| pEntity->GetLifeState() == 1
 			|| pEntity->GetTeamNum() == pLocal->GetTeamNum()

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Defines.h"
+
 enum InitReturnVal_t
 {
 	INIT_FAILED = 0,

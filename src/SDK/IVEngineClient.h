@@ -15,12 +15,6 @@ public:
 		return CallVFunction<GetPlayerInfoFn>(this, 8)(this, index, pInfo);
 	}
 
-	void ClientCmd(const char* szCommandString)
-	{
-		typedef void(__thiscall* ClientCmdFn)(void*, const char*);
-		return CallVFunction<ClientCmdFn>(this, 102)(this, szCommandString);
-	}
-
 	int GetLocalPlayer()
 	{
 		typedef int(__thiscall* GetLocalPlayerFn)(void*);
@@ -61,5 +55,17 @@ public:
 	{
 		typedef bool(__thiscall* IsConnectedFn)(void*);
 		return CallVFunction<IsConnectedFn>(this, 27)(this);
+	}
+
+	bool IsTakingScreenshot()
+	{
+		typedef bool(__thiscall* IsTakingScreenshotFn)(void*);
+		return CallVFunction<IsTakingScreenshotFn>(this, 85)(this);
+	}
+
+	void ClientCmd_Unrestricted(const char* command)
+	{
+		typedef bool(__thiscall* IsTakingScreenshotFn)(void*, const char*);
+		CallVFunction<IsTakingScreenshotFn>(this, 106)(this, command);
 	}
 };
