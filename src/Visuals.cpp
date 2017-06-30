@@ -57,7 +57,8 @@ void Visuals::DrawESP()
 			|| pEntity->IsDormant()
 			|| pEntity->GetHealth() <= 0
 			|| pEntity->GetLifeState() == 1
-			|| pEntity->GetTeamNum() == pLocal->GetTeamNum())
+			|| pEntity->GetTeamNum() == pLocal->GetTeamNum()
+			|| pEntity == pLocal)
 			continue;
 
 		Vector mins, maxs;

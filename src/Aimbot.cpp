@@ -14,7 +14,9 @@ C_CSPlayer* Aimbot::GetBestTarget(CUserCmd* pCmd)
 			|| pEntity->IsDormant()
 			|| pEntity->GetHealth() <= 0
 			|| pEntity->GetLifeState() == 1
-			|| pEntity->GetTeamNum() == pLocal->GetTeamNum())
+			|| pEntity->GetTeamNum() == pLocal->GetTeamNum()
+			|| pEntity == pLocal
+			|| !Entity::IsVisible(pEntity, 12))
 			continue;
 
 		auto fov = Math::GetFov(pCmd->viewangles, Math::CalcAngle(pLocal->GetEyePosition(), Entity::GetHitboxPosition(pEntity, Settings::Aimbot::Hitbox)));
