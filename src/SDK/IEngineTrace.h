@@ -41,7 +41,6 @@ public:
 	unsigned short  dispFlags;
 	bool                    allsolid;
 	bool                    startsolid;
-
 };
 
 struct csurface_t

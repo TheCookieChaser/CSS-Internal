@@ -87,8 +87,6 @@ public:
 		return *reinterpret_cast<int*>((uintptr_t)this + m_fFlags);
 	}
 
-
-
 	Vector GetEyePosition()
 	{
 		return GetVecOrigin() + GetVecViewOffset();
@@ -101,58 +99,118 @@ public:
 	}
 };
 
+class FileWeaponInfo_t
+{
+public:
+	char pad_0x0000[0x6]; //0x0000
+	char name[64]; //0x1037888 
+	char pad_0x0046[0x10]; //0x0046
+	char valamigeci[64]; //0x1037888 
+	char pad_0x0096[0x10]; //0x0096
+	char viewmodelname[64]; //0x1037888 
+	char pad_0x00E6[0x10]; //0x00E6
+	char worldmodelname[64]; //0x1037888 
+	char pad_0x0136[0x4A]; //0x0136
+	char bullettype[64]; //0x1037888 
+	char pad_0x01C0[0x50]; //0x01C0
+	char masiknev[64]; //0x1037888 
+	char pad_0x0250[0x380]; //0x0250
+	char zoomname[32]; //0x1037888 
+	char pad_0x05F0[0x294]; //0x05F0
+	__int32 penetration; //0x0884 
+	__int32 damage; //0x0888 
+	float range; //0x088C 
+	float rangemodifier; //0x0890 
+	__int32 bullets; //0x0894 
+	float cycletime; //0x0898 
+	char pad_0x089C[0xEC]; //0x089C
+
+}; //Size=0x0988
+
 class C_BaseCombatWeapon : public C_BaseEntity
 {
 public:
 	float GetNextPrimaryAttack()
 	{
+		if (!this)
+			return 0.f;
+
 		return *(float*)((DWORD)this + 0x878);
 	}
 
 	int Clip1()
 	{
+		if (!this)
+			return 0;
+
 		typedef int(__thiscall* GetSubType_t)(void*);
 		return CallVFunction<GetSubType_t>(this, 320)(this);
 	}
 
 	int GetWeaponID()
 	{
+		if (!this)
+			return 0;
+
 		typedef int(__thiscall* GetWeaponID_t)(void*);
 		return CallVFunction<GetWeaponID_t>(this, 365)(this);
 	}
 
-	const char* GetName()
-	{
-		typedef const char*(__thiscall* GetName_t)(void*);
-		return CallVFunction<GetName_t>(this, 311)(this);
-	}
-
 	bool IsFullAuto()
 	{
+		if (!this)
+			return 0.f;
+
 		typedef bool(__thiscall* IsFullAuto_t)(void*);
 		return CallVFunction<IsFullAuto_t>(this, 363)(this);
 	}
 
 	float GetInaccuracy()
 	{
+		if (!this)
+			return 0.f;
+
 		typedef float(__thiscall* GetInaccuracy_t)(void*);
 		return CallVFunction<GetInaccuracy_t>(this, 377)(this);
 	}
 
 	float GetSpread()
 	{
+		if (!this)
+			return 0.f;
+
 		typedef float(__thiscall* GetSpread_t)(void*);
 		return CallVFunction<GetSpread_t>(this, 376)(this);
 	}
 
 	void UpdateAccuracyPenalty()
 	{
+		if (!this)
+			return;
+
 		typedef void(__thiscall* UpdateAccuracyPenalty_t)(void*);
 		return CallVFunction<UpdateAccuracyPenalty_t>(this, 378)(this);
 	}
 
 	float& GetAccuracyPenalty()
 	{
+		float a = 0.0f;
+		if (!this)
+			return a;
+
 		return *(float*)((DWORD)this + 0x930);
+	}
+
+	FileWeaponInfo_t& GetWeaponData()
+	{
+		FileWeaponInfo_t a;
+		if (!this)
+			return a;
+
+		static uint64_t GetWeaponData;
+		if (!GetWeaponData)
+			GetWeaponData = Tools::FindSignature("client.dll", "0F B7 81 ? ? ? ? 50 E8 ? ? ? ? 83 C4 04 C3");
+		
+		return reinterpret_cast<FileWeaponInfo_t&(__thiscall*)(C_BaseCombatWeapon*)>(GetWeaponData)(this);
 	}
 };

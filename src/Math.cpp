@@ -50,17 +50,9 @@ void Math::NormalizeAngles(Vector& angle)
 
 void Math::ClampAngles(Vector& angle)
 {
-	if (angle.y > 180.0f)
-		angle.y = 180.0f;
-	else if (angle.y < -180.0f)
-		angle.y = -180.0f;
-
-	if (angle.x > 89.0f)
-		angle.x = 89.0f;
-	else if (angle.x < -89.0f)
-		angle.x = -89.0f;
-
-	angle.z = 0;
+	std::clamp<float>(angle.y, -180.0f, 180.0f);
+	std::clamp<float>(angle.x, -89.0f, 89.0f);
+	std::clamp<float>(angle.z, -50.0f, 50.0f);
 }
 
 void Math::CorrectMovement(Vector vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove)

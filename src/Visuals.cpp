@@ -82,6 +82,11 @@ void Visuals::DrawESP()
 		if (!pWeapon)
 			continue;
 
+		auto weapondata = &pWeapon->GetWeaponData();
+
+		if (!weapondata)
+			continue;
+
 		if (Settings::Visuals::Box)
 		{
 			DrawManager->DrawRect({ top.x - width, top.y }, { top.x + width, top.y + height }, GetPlayerColor(pEntity));
@@ -91,7 +96,7 @@ void Visuals::DrawESP()
 
 		if (Settings::Visuals::Health)
 		{
-			UINT pos = height - (UINT)((pEntity->GetHealth() * height) / 100);
+			float pos = height - (float)((pEntity->GetHealth() * height) / 100);
 			DrawManager->DrawRectFilled({ top.x - width - 6, top.y + pos }, { top.x - width - 2, top.y + height }, GetHealthColor(pEntity->GetHealth()));
 			DrawManager->DrawRect({ top.x - width - 6 , top.y }, { top.x - width - 2, top.y + height }, ImColor(0, 0, 0, 255));
 		}
@@ -111,7 +116,7 @@ void Visuals::DrawESP()
 
 		if (Settings::Visuals::Weapon)
 		{
-			DrawManager->DrawText({ top.x, top.y + height }, ImColor(255, 255, 255, 255), text_flags::centered_x, pWeapon->GetName());
+			DrawManager->DrawText({ top.x, top.y + height }, ImColor(255, 255, 255, 255), text_flags::centered_x, weapondata->name);
 		}
 	}
 }

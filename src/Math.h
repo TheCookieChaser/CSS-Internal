@@ -2,6 +2,7 @@
 
 #include "SDK/SDK.h"
 #include <iostream>
+#include <algorithm>
 
 namespace Math
 {

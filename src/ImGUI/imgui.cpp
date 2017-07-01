@@ -9155,7 +9155,7 @@ void ImGui::ColorEditMode(ImGuiColorEditMode mode)
 bool ImGui::ColorPicker(float *col, bool alphabar)
 {
 	const int    EDGE_SIZE = 200; // = int( ImGui::GetWindowWidth() * 0.75f );
-	const ImVec2 SV_PICKER_SIZE = ImVec2(EDGE_SIZE, EDGE_SIZE);
+	const ImVec2 SV_PICKER_SIZE = ImVec2((float)EDGE_SIZE, (float)EDGE_SIZE);
 	const float  SPACING = ImGui::GetStyle().ItemInnerSpacing.x;
 	const float  HUE_PICKER_WIDTH = 20.f;
 	const float  CROSSHAIR_SIZE = 7.0f;
@@ -9317,7 +9317,7 @@ bool ImGui::ColorPicker(float *col, bool alphabar)
 
 	// R,G,B or H,S,V color editor
 
-	color = ImColor::HSV(hue >= 1 ? hue - 10 * 1e-6 : hue, saturation > 0 ? saturation : 10 * 1e-6, value > 0 ? value : 1e-6);
+	color = ImColor::HSV(hue >= 1 ? hue - 10 * 1e-6f : hue, saturation > 0 ? saturation : 10 * 1e-6f, value > 0 ? value : 1e-6f);
 	col[0] = color.Value.x;
 	col[1] = color.Value.y;
 	col[2] = color.Value.z;
