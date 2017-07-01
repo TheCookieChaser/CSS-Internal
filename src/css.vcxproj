@@ -139,6 +139,7 @@
     <ClCompile Include="SDK\UtlString.cpp" />
     <ClCompile Include="SDK\Vector.cpp" />
     <ClCompile Include="SDK\Vector2D.cpp" />
+    <ClCompile Include="SDK\VMatrix.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Tools.cpp" />
     <ClCompile Include="Visuals.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="SDK\UtlVector.h" />
     <ClInclude Include="SDK\Vector.h" />
     <ClInclude Include="SDK\Vector2D.h" />
+    <ClInclude Include="SDK\VMatrix.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="Visuals.h" />

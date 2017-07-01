@@ -30,15 +30,6 @@ struct Ray_t
 	}
 };
 
-struct cplane_t
-{
-	Vector  normal;
-	float   dist;
-	BYTE    type;
-	BYTE    signbits;
-	BYTE    pad[2];
-};
-
 class CBaseTrace
 {
 public:

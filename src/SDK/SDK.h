@@ -15,6 +15,7 @@
 #include "IClientEntity.h"
 #include "IClientEntityList.h"
 #include "player_info.h"
+#include "VMatrix.h"
 #include "IVEngineClient.h"
 #include "studio.h"
 #include "IVModelInfo.h"

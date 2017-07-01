@@ -114,6 +114,9 @@
     <ClCompile Include="SDK\Convar.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\VMatrix.cpp">
+      <Filter>SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vmthooks.h">
@@ -264,6 +267,9 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IConVar.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\VMatrix.h">
       <Filter>SDK</Filter>
     </ClInclude>
   </ItemGroup>
