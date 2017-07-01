@@ -280,11 +280,5 @@ public:
 		return *this;
 	}
 
-	VectorAligned& operator=(const VectorAligned &vOther)
-	{
-		_mm_store_ps(Base(), _mm_load_ps(vOther.Base()));
-		return *this;
-	}
-
 	float w;
 };
