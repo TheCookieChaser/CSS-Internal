@@ -42,7 +42,7 @@ bool CDrawManager::WorldToScreen(const Vector& origin, D3DXVECTOR2& screen)
 	if (!ScreenTransform(origin, screen))
 	{
 		int iScreenWidth, iScreenHeight;
-		engine->GetScreenSize(iScreenWidth, iScreenHeight);
+		g_engine->GetScreenSize(iScreenWidth, iScreenHeight);
 
 		screen.x = (iScreenWidth / 2.0f) + (screen.x * iScreenWidth) / 2;
 		screen.y = (iScreenHeight / 2.0f) - (screen.y * iScreenHeight) / 2;

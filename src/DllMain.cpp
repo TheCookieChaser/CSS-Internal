@@ -4,33 +4,35 @@
 #include "Settings.h"
 #include "NetVarManager.h"
 
-std::unique_ptr<VFTableHook> D3DDeviceTable = nullptr;
-std::unique_ptr<VFTableHook> ClientTable = nullptr;
+cvmt_hook* d3ddevice_table = nullptr;
+cvmt_hook* client_table = nullptr;
+
+Reset_fn		oReset = nullptr;
+EndScene_fn		oEndScene = nullptr;
+CreateMove_fn	oCreateMove = nullptr;
 
 void Initialize_Hooks()
 {
-	D3DDeviceTable = std::make_unique<VFTableHook>((PPDWORD)d3ddevice, true);
-	ClientTable = std::make_unique<VFTableHook>((PPDWORD)client, true);
-
 	while (!(hWindow = FindWindowA("Valve001", NULL))) 
 		Sleep(200);
 
-	if (hWindow)
-		pOldWindowProc = (WNDPROC)SetWindowLongPtr(hWindow, GWLP_WNDPROC, (LONG_PTR)WndProc_Hooked);
+	pOldWindowProc = (WNDPROC)SetWindowLongPtr(hWindow, GWLP_WNDPROC, (LONG_PTR)WndProc_Hooked);
 
-	D3DDeviceTable->Hook(82, DrawIndexedPrimitive_Hooked);
-	D3DDeviceTable->Hook(16, Reset_Hooked);
-	D3DDeviceTable->Hook(42, EndScene_Hooked);
-	ClientTable->Hook(21, CreateMove_Hooked);
-	//ClientTable->Hook(23, WriteUsercmdDeltaToBuffer_Hooked); //i recreated this and it works perfectly, maybe usefull for someone
+	d3ddevice_table = new cvmt_hook(g_d3ddevice);
+	oReset = d3ddevice_table->hook<Reset_fn>(16, Reset_Hooked);
+	d3ddevice_table->hook<EndScene_fn>(42, EndScene_Hooked);
+
+	client_table = new cvmt_hook(g_client);
+	oCreateMove = client_table->hook<CreateMove_fn>(21, CreateMove_Hooked);
+	client_table->hook(23, WriteUsercmdDeltaToBuffer_Hooked);
 }
 
 void Restore_Hooks()
 {
 	SetWindowLongPtr(hWindow, GWLP_WNDPROC, (LONG_PTR)pOldWindowProc);
 
-	D3DDeviceTable->RestoreTable();
-	ClientTable->RestoreTable();
+	delete d3ddevice_table;
+	delete client_table;
 }
 
 HINSTANCE dll;
@@ -40,12 +42,10 @@ DWORD WINAPI CheatThread(LPVOID lpvReserved)
 	freopen("CON", "w", stdout);
 	SetConsoleTitle("css");
 
-	GetInterfaces();
-	NetVarManager->Initialize();
-	//NetVarManager->DumpNetvars();
+	initialize_interfaces();
 	Initialize_Hooks();
 
-	cvar->ConsoleColorPrintf(Color(150, 255, 150), "Injected Sucessfully!\n");
+	g_cvar->ConsoleColorPrintf(Color(150, 255, 150), "Injected Sucessfully!\n");
 
 	while (!(GetAsyncKeyState(VK_END) & 0x8000))
 	{
@@ -63,11 +63,11 @@ DWORD WINAPI CheatThread(LPVOID lpvReserved)
 		}
 	}
 
-	cvar->ConsoleColorPrintf(Color(150, 255, 150), "Unloading...\n");
+	g_cvar->ConsoleColorPrintf(Color(150, 255, 150), "Unloading...\n");
 	FreeConsole();
 	Restore_Hooks();
 	Sleep(1000);
-	cvar->ConsoleColorPrintf(Color(150, 255, 150), "Unloaded Sucessfully!\n");
+	g_cvar->ConsoleColorPrintf(Color(150, 255, 150), "Unloaded Sucessfully!\n");
 	FreeLibraryAndExitThread(dll, NULL);
 }
 

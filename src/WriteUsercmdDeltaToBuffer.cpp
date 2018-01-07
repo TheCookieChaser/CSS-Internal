@@ -6,9 +6,9 @@
 void ValidateUserCmd(CUserCmd *usercmd, int sequence_number)
 {
 	CRC32_t crc = usercmd->GetChecksum();
-	if (crc != input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP].m_crc)
+	if (crc != g_input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP].m_crc)
 	{
-		*usercmd = input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP].m_cmd;
+		*usercmd = g_input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP].m_cmd;
 	}
 }
 
@@ -16,7 +16,7 @@ CUserCmd* GetUserCmd(int sequence_number)
 {
 	Assert(m_pCommands);
 
-	CUserCmd *usercmd = &input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];
+	CUserCmd *usercmd = &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];
 
 	if (usercmd->command_number != sequence_number)
 	{
@@ -25,9 +25,6 @@ CUserCmd* GetUserCmd(int sequence_number)
 
 	return usercmd;
 }
-
-using WriteUsercmdFn = void(__cdecl*)(void* buffer, CUserCmd* from, CUserCmd* to);
-WriteUsercmdFn WriteUsercmd;
 
 bool __fastcall WriteUsercmdDeltaToBuffer_Hooked(void* ecx, void* edx, void* buf, int from, int to, bool isnewcommand)
 {
@@ -57,9 +54,8 @@ bool __fastcall WriteUsercmdDeltaToBuffer_Hooked(void* ecx, void* edx, void* buf
 	else
 		v9 = &v16;
 
-	if (!WriteUsercmd)
-		WriteUsercmd = reinterpret_cast<WriteUsercmdFn>(Tools::FindSignature("client.dll", "55 8B EC 8B 45 10 83 EC 08"));
-
+	static auto WriteUsercmd = reinterpret_cast<void(__cdecl*)(void* buffer, CUserCmd* from, CUserCmd* to)>(
+		Tools::FindSignature("client.dll", "55 8B EC 8B 45 10 83 EC 08"));
 	WriteUsercmd(buf, v9, v7);
 
 	return true;

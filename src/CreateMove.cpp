@@ -6,7 +6,26 @@
 #include "Aimbot.h"
 #include "Misc.h"
 
-void __stdcall CreateMove(int sequence_number, float input_sample_frametime, bool active, bool& sendpacket);
+void __stdcall CreateMove(int sequence_number, float input_sample_frametime, bool active, bool& sendpacket)
+{
+	oCreateMove(sequence_number, input_sample_frametime, active);
+
+	auto cmd = &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];
+	auto verified = &g_input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP];
+
+	if (!cmd || !verified)
+		return;
+
+	auto local = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
+	if (local)
+	{
+		Aimbot::CreateMove(cmd);
+		Misc::CreateMove(cmd);
+	}
+
+	verified->m_cmd = *cmd;
+	verified->m_crc = cmd->GetChecksum();
+}
 
 void __declspec(naked) __stdcall CreateMove_Hooked(int sequence_number, float input_sample_frametime, bool active)
 {
@@ -20,26 +39,4 @@ void __declspec(naked) __stdcall CreateMove_Hooked(int sequence_number, float in
 		CALL CreateMove
 		RET 0x0C
 	}
-}
-
-void __stdcall CreateMove(int sequence_number, float input_sample_frametime, bool active, bool& sendpacket)
-{
-	ClientTable->GetOriginal<CreateMove_t>(21)(sequence_number, input_sample_frametime, active);
-
-	CUserCmd *pCmd = &input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];
-	CVerifiedUserCmd *pVerified = &input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP];
-
-	if (!pCmd || !pVerified)
-		return;
-
-	auto pLocal = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(engine->GetLocalPlayer()));
-
-	if (!pLocal)
-		return;
-
-	Aimbot::CreateMove(pCmd);
-	Misc::CreateMove(pCmd);
-
-	pVerified->m_cmd = *pCmd;
-	pVerified->m_crc = pCmd->GetChecksum();
 }

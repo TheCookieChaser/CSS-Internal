@@ -9,4 +9,5 @@
 namespace Tools
 {
 	uint64_t FindSignature(const char* szModule, const char* szSignature);
+	bool IsCodePtr(void * ptr);
 }

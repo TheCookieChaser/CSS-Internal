@@ -2,100 +2,46 @@
 
 #include "SDK.h"
 #include "../NetVarManager.h"
+#include "../virtuals.h"
 
 class C_BaseCombatWeapon;
-
 class C_BaseEntity : public IClientEntity
 {
 public:
-	int GetTeamNum()
-	{
-		static int m_iTeamNum = NetVarManager->GetOffset("DT_BaseEntity", "m_iTeamNum");
-		return *reinterpret_cast<int*>((uintptr_t)this + m_iTeamNum);
-	}
-
-	Vector GetVecOrigin()
-	{
-		static int m_vecOrigin = NetVarManager->GetOffset("DT_BaseEntity", "m_vecOrigin");
-		return *reinterpret_cast<Vector*>((uintptr_t)this + m_vecOrigin);
-	}
+	NETVAR(get_team_num, "CBaseEntity", "m_iTeamNum", std::int32_t);
+	NETVAR(get_origin, "CBaseEntity", "m_vecOrigin", Vector);
 };
 
 class C_BaseAnimating : public C_BaseEntity
 {
 public:
-	int GetHitboxSet()
-	{
-		static int m_nHitboxSet = NetVarManager->GetOffset("DT_BaseAnimating", "m_nHitboxSet");
-		return *reinterpret_cast<int*>((uintptr_t)this + m_nHitboxSet);
-	}
+	NETVAR(get_hitbox_set, "CBaseAnimating", "m_nHitboxSet", std::uint32_t);
 };
 
 class C_BasePlayer : public C_BaseAnimating
 {
 public:
-	unsigned char GetLifeState()
-	{
-		static int m_lifeState = NetVarManager->GetOffset("DT_BasePlayer", "m_lifeState");
-		return *reinterpret_cast<unsigned char*>((uintptr_t)this + m_lifeState);
-	}
-
-	int GetHealth()
-	{
-		static int m_iHealth = NetVarManager->GetOffset("DT_BasePlayer", "m_iHealth");
-		return *reinterpret_cast<int*>((uintptr_t)this + m_iHealth);
-	}
-
-	int GetTickBase()
-	{
-		static int m_nTickBase = NetVarManager->GetOffset("DT_BasePlayer", "m_nTickBase");
-		return *reinterpret_cast<int*>((uintptr_t)this + m_nTickBase);
-	}
-
-	Vector* GetAimPunch()
-	{
-		static int m_vecPunchAngle = NetVarManager->GetOffset("DT_BasePlayer", "m_vecPunchAngle");
-		return reinterpret_cast<Vector*>((uintptr_t)this + m_vecPunchAngle);
-	}
-
-	Vector GetVecViewOffset()
-	{
-		static int m_vecViewOffset = NetVarManager->GetOffset("DT_BasePlayer", "m_vecViewOffset[0]");
-		return *reinterpret_cast<Vector*>((uintptr_t)this + m_vecViewOffset);
-	}
+	NETVAR(get_life_state, "CBasePlayer", "m_lifeState", std::uint8_t);
+	NETVAR(get_health, "CBasePlayer", "m_iHealth", std::int32_t);
+	NETVAR(get_tick_base, "CBasePlayer", "m_nTickBase", std::uint32_t);
+	NETVAR(get_aim_punch, "CBasePlayer", "m_vecPunchAngle", Vector);
+	NETVAR(get_view_offset, "CBasePlayer", "m_vecViewOffset[0]", Vector);
 };
 
 class C_CSPlayer : public C_BasePlayer
 {
 public:
+	NETVAR(get_flags, "CCSPlayer", "m_fFlags", std::int32_t);
+	NETVAR(get_eye_angles, "CCSPlayer", "m_angEyeAngles[0]", Vector);
+
+	Vector get_eye_position() 
+	{
+		return get_origin() + get_view_offset();;
+	}
+
 	C_BaseCombatWeapon* GetActiveWeapon()
 	{
-		C_BaseCombatWeapon* pActiveWeapon;
-		__asm
-		{
-			MOV ECX, this
-			MOV EAX, [ECX]
-			CALL DWORD PTR DS : [EAX + 0x378]
-			MOV pActiveWeapon, EAX
-		}
-		return pActiveWeapon;
-	}
-
-	int GetFlags()
-	{
-		static int m_fFlags = NetVarManager->GetOffset("DT_CSPlayer", "m_fFlags");
-		return *reinterpret_cast<int*>((uintptr_t)this + m_fFlags);
-	}
-
-	Vector GetEyePosition()
-	{
-		return GetVecOrigin() + GetVecViewOffset();
-	}
-
-	Vector* GetEyeAngles()
-	{
-		static int m_angEyeAngles = NetVarManager->GetOffset("DT_CSPlayer", "m_angEyeAngles[0]");
-		return reinterpret_cast<Vector*>((uintptr_t)this + m_angEyeAngles);
+		return get_vfunc<C_BaseCombatWeapon*(__thiscall*)(void*)>(this, 222)(this);
 	}
 };
 
@@ -132,73 +78,42 @@ class C_BaseCombatWeapon : public C_BaseEntity
 public:
 	float GetNextPrimaryAttack()
 	{
-		if (!this)
-			return 0.f;
-
-		return *(float*)((DWORD)this + 0x878);
+		return *reinterpret_cast<float*>(reinterpret_cast<std::uintptr_t>(this) + 0x878);
 	}
 
 	int Clip1()
 	{
-		if (!this)
-			return 0;
-
-		typedef int(__thiscall* GetSubType_t)(void*);
-		return CallVFunction<GetSubType_t>(this, 320)(this);
+		return get_vfunc<int(__thiscall*)(void*)>(this, 320)(this);
 	}
 
 	int GetWeaponID()
 	{
-		if (!this)
-			return 0;
-
-		typedef int(__thiscall* GetWeaponID_t)(void*);
-		return CallVFunction<GetWeaponID_t>(this, 365)(this);
+		return get_vfunc<int(__thiscall*)(void*)>(this, 365)(this);
 	}
 
 	bool IsFullAuto()
 	{
-		if (!this)
-			return 0.f;
-
-		typedef bool(__thiscall* IsFullAuto_t)(void*);
-		return CallVFunction<IsFullAuto_t>(this, 363)(this);
+		return get_vfunc<bool(__thiscall*)(void*)>(this, 363)(this);
 	}
 
 	float GetInaccuracy()
 	{
-		if (!this)
-			return 0.f;
-
-		typedef float(__thiscall* GetInaccuracy_t)(void*);
-		return CallVFunction<GetInaccuracy_t>(this, 377)(this);
+		return get_vfunc<float(__thiscall*)(void*)>(this, 377)(this);
 	}
 
 	float GetSpread()
 	{
-		if (!this)
-			return 0.f;
-
-		typedef float(__thiscall* GetSpread_t)(void*);
-		return CallVFunction<GetSpread_t>(this, 376)(this);
+		return get_vfunc<float(__thiscall*)(void*)>(this, 376)(this);
 	}
 
 	void UpdateAccuracyPenalty()
 	{
-		if (!this)
-			return;
-
-		typedef void(__thiscall* UpdateAccuracyPenalty_t)(void*);
-		return CallVFunction<UpdateAccuracyPenalty_t>(this, 378)(this);
+		return get_vfunc<void(__thiscall*)(void*)>(this, 378)(this);
 	}
 
 	float& GetAccuracyPenalty()
 	{
-		float a = 0.0f;
-		if (!this)
-			return a;
-
-		return *(float*)((DWORD)this + 0x930);
+		return *reinterpret_cast<float*>(reinterpret_cast<std::uintptr_t>(this) + 0x930);
 	}
 
 	FileWeaponInfo_t& GetWeaponData()

@@ -69,9 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;..\deps;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>C:\CSS</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -90,12 +89,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -116,17 +117,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\deps\imgui\examples\directx9_example\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui_draw.cpp" />
     <ClCompile Include="Aimbot.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="CreateMove.cpp" />
     <ClCompile Include="DllMain.cpp" />
-    <ClCompile Include="DrawIndexedPrimitive.cpp" />
     <ClCompile Include="DrawManager.cpp" />
     <ClCompile Include="EndScene.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="ImGUI\DX9\imgui_impl_dx9.cpp" />
-    <ClCompile Include="ImGUI\imgui.cpp" />
-    <ClCompile Include="ImGUI\imgui_draw.cpp" />
     <ClCompile Include="Interfaces.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Menu.cpp" />
@@ -152,17 +153,9 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="DrawManager.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="FnvHash.h" />
+    <ClInclude Include="fnv_hash.h" />
     <ClInclude Include="Hooks.h" />
-    <ClInclude Include="ImGUI\DX9\imgui_impl_dx9.h" />
-    <ClInclude Include="ImGUI\imconfig.h" />
-    <ClInclude Include="ImGUI\imgui.h" />
-    <ClInclude Include="ImGUI\imgui_internal.h" />
-    <ClInclude Include="ImGUI\stb_rect_pack.h" />
-    <ClInclude Include="ImGUI\stb_textedit.h" />
-    <ClInclude Include="ImGUI\stb_truetype.h" />
     <ClInclude Include="Interfaces.h" />
-    <ClInclude Include="json.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Misc.h" />
@@ -177,7 +170,7 @@
     <ClInclude Include="SDK\CRC.h" />
     <ClInclude Include="SDK\IConVar.h" />
     <ClInclude Include="SDK\ICVar.h" />
-    <ClInclude Include="SDK\Defines.h" />
+    <ClInclude Include="SDK\definitions.h" />
     <ClInclude Include="SDK\IAppSystem.h" />
     <ClInclude Include="SDK\IBaseClientDll.h" />
     <ClInclude Include="SDK\IClientEntity.h" />
@@ -197,6 +190,7 @@
     <ClInclude Include="SDK\VMatrix.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Tools.h" />
+    <ClInclude Include="virtuals.h" />
     <ClInclude Include="Visuals.h" />
     <ClInclude Include="vmthooks.h" />
   </ItemGroup>

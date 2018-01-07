@@ -88,5 +88,5 @@ HRESULT STDMETHODCALLTYPE EndScene_Hooked(IDirect3DDevice9* vDevice)
 		bWasInitialized = true;
 	}
 
-	return D3DDeviceTable->GetOriginal<EndScene_t>(42)(vDevice);
+	return oEndScene(vDevice);
 }

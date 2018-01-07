@@ -27,3 +27,15 @@ uint64_t Tools::FindSignature(const char* szModule, const char* szSignature)
 	}
 	return NULL;
 }
+
+bool Tools::IsCodePtr(void* ptr)
+{
+	constexpr const DWORD protect_flags = PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY;
+
+	MEMORY_BASIC_INFORMATION out;
+	VirtualQuery(ptr, &out, sizeof out);
+
+	return out.Type
+		&& !(out.Protect & (PAGE_GUARD | PAGE_NOACCESS))
+		&& out.Protect & protect_flags;
+}

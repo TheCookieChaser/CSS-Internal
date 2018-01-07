@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDK.h"
+#include "../virtuals.h"
 
 class DVariant;
 class CRecvProxyData;
@@ -168,6 +169,6 @@ public:
 	ClientClass* GetAllClasses()
 	{
 		typedef ClientClass* (__thiscall* GetAllClassesFn)(void*);
-		return CallVFunction<GetAllClassesFn>(this, 8)(this);
+		return get_vfunc<GetAllClassesFn>(this, 8)(this);
 	}
 };

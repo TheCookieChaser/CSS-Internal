@@ -5,21 +5,21 @@ C_CSPlayer* Aimbot::GetBestTarget(CUserCmd* pCmd)
 	C_CSPlayer* bestentity = nullptr;
 	auto bestfov = Settings::Aimbot::Fov;
 
-	auto pLocal = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(engine->GetLocalPlayer()));
-	for (int i = 0; i < entitylist->GetHighestEntityIndex(); i++)
+	auto pLocal = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
+	for (int i = 0; i < g_entitylist->GetHighestEntityIndex(); i++)
 	{
-		auto pEntity = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(i));
+		auto pEntity = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(i));
 
 		if (!pEntity
 			|| pEntity->IsDormant()
-			|| pEntity->GetHealth() <= 0
-			|| pEntity->GetLifeState() == 1
-			|| pEntity->GetTeamNum() == pLocal->GetTeamNum()
+			|| pEntity->get_health() <= 0
+			|| pEntity->get_life_state() == 1
+			|| pEntity->get_team_num() == pLocal->get_team_num()
 			|| pEntity == pLocal
 			|| !Entity::IsVisible(pEntity, 12))
 			continue;
 
-		auto fov = Math::GetFov(pCmd->viewangles, Math::CalcAngle(pLocal->GetEyePosition(), Entity::GetHitboxPosition(pEntity, Settings::Aimbot::Hitbox)));
+		auto fov = Math::GetFov(pCmd->viewangles, Math::CalcAngle(pLocal->get_eye_position(), Entity::GetHitboxPosition(pEntity, Settings::Aimbot::Hitbox)));
 
 		if (fov < bestfov)
 		{
@@ -36,14 +36,14 @@ void Aimbot::CreateMove(CUserCmd* pCmd)
 	if (!Settings::Aimbot::Enalbed)
 		return;
 
-	auto pLocal = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(engine->GetLocalPlayer()));
+	auto pLocal = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	auto pEntity = GetBestTarget(pCmd);
 
 	if (!pEntity)
 		return;
 
-	auto ang = Math::CalcAngle(pLocal->GetEyePosition(), Entity::GetHitboxPosition(pEntity, Settings::Aimbot::Hitbox));
-	ang -= *pLocal->GetAimPunch() * 2.f;
+	auto ang = Math::CalcAngle(pLocal->get_eye_position(), Entity::GetHitboxPosition(pEntity, Settings::Aimbot::Hitbox));
+	ang -= pLocal->get_aim_punch() * 2.f;
 	Math::NormalizeAngles(ang);
 
 	if (Settings::Aimbot::Smooth)
@@ -65,7 +65,7 @@ void Aimbot::CreateMove(CUserCmd* pCmd)
 	{
 		pCmd->viewangles = ang;
 		if (!Settings::Aimbot::Silent)
-			engine->SetViewAngles(ang);
+			g_engine->SetViewAngles(ang);
 
 		if (Settings::Aimbot::AutoFire)
 			pCmd->buttons |= IN_ATTACK;

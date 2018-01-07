@@ -6,8 +6,6 @@
 #define ALIGN_VALUE( val, alignment ) ( ( val + alignment - 1 ) & ~( alignment - 1 ) ) 
 #define stackalloc( _size )		_alloca( ALIGN_VALUE( _size, 16 ) )
 
-#define g_pCVar cvar
-
 ConCommandBase *ConCommandBase::s_pConCommandBases = NULL;
 ConCommandBase *ConCommandBase::s_pRegisteredCommands = NULL;
 IConCommandBaseAccessor	*ConCommandBase::s_pAccessor = NULL;
@@ -21,7 +19,7 @@ public:
 	virtual bool RegisterConCommandBase(ConCommandBase *pVar)
 	{
 		// Link to engine's list instead
-		g_pCVar->RegisterConCommand(pVar);
+		g_cvar->RegisterConCommand(pVar);
 		return true;
 	}
 };
@@ -33,13 +31,13 @@ static CDefaultAccessor s_DefaultAccessor;
 //-----------------------------------------------------------------------------
 void ConVar_Register(int nCVarFlag, IConCommandBaseAccessor *pAccessor)
 {
-	if (!g_pCVar || s_bRegistered)
+	if (!g_cvar || s_bRegistered)
 		return;
 
 	assert(s_nDLLIdentifier < 0);
 	s_bRegistered = true;
 	s_nCVarFlag = nCVarFlag;
-	s_nDLLIdentifier = g_pCVar->AllocateDLLIdentifier();
+	s_nDLLIdentifier = g_cvar->AllocateDLLIdentifier();
 
 	ConCommandBase *pCur, *pNext;
 
@@ -61,11 +59,11 @@ void ConVar_Register(int nCVarFlag, IConCommandBaseAccessor *pAccessor)
 
 void ConVar_Unregister()
 {
-	if (!g_pCVar || !s_bRegistered)
+	if (!g_cvar || !s_bRegistered)
 		return;
 
 	assert(s_nDLLIdentifier >= 0);
-	g_pCVar->UnregisterConCommands(s_nDLLIdentifier);
+	g_cvar->UnregisterConCommands(s_nDLLIdentifier);
 	s_nDLLIdentifier = -1;
 	s_bRegistered = false;
 }
@@ -130,8 +128,8 @@ void ConCommandBase::Init()
 
 void ConCommandBase::Shutdown()
 {
-	if (g_pCVar) {
-		g_pCVar->UnregisterConCommand(this);
+	if (g_cvar) {
+		g_cvar->UnregisterConCommand(this);
 	}
 }
 
@@ -608,8 +606,8 @@ void ConVar::ChangeStringValue(const char *tempVal, float flOldValue)
 		m_fnChangeCallbacks[i](this, pszOldValue, flOldValue);
 	}
 
-	if (g_pCVar)
-		g_pCVar->CallGlobalChangeCallbacks(this, pszOldValue, flOldValue);
+	if (g_cvar)
+		g_cvar->CallGlobalChangeCallbacks(this, pszOldValue, flOldValue);
 }
 
 bool ConVar::ClampValue(float& value)

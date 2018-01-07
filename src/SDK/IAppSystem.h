@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Defines.h"
+#include "definitions.h"
 
 enum InitReturnVal_t
 {

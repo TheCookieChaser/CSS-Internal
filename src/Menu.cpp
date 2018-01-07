@@ -236,18 +236,18 @@ void Menu::PlayersTab()
 		ImGui::SetColumnOffset(1, 300);
 		ImGui::BeginChild("COL2", ImVec2(0, 0), true);
 		{
-			for (int i = 0; i <= entitylist->GetHighestEntityIndex(); i++)
+			for (int i = 0; i <= g_entitylist->GetHighestEntityIndex(); i++)
 			{
-				auto pEntity = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(i));
+				auto pEntity = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(i));
 
-				if (!pEntity || i == engine->GetLocalPlayer())
+				if (!pEntity || i == g_engine->GetLocalPlayer())
 					continue;
 
 				player_info_t info;
-				if (!engine->GetPlayerInfo(i, &info))
+				if (!g_engine->GetPlayerInfo(i, &info))
 					continue;
 
-				eyeangle[i] = *pEntity->GetEyeAngles();
+				eyeangle[i] = pEntity->get_eye_angles();
 				Math::NormalizeAngles(eyeangle[i]);
 
 				bool isselected = player_selected == i;

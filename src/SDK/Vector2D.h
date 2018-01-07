@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Defines.h"
+#include "definitions.h"
 
 typedef float vec_t;
 // 2D Vector

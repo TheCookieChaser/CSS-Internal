@@ -5,7 +5,7 @@
 
 #include "Vector.h"
 #include "Vector2D.h"
-#include "Defines.h"
+#include "definitions.h"
 #include "IAppSystem.h"
 #include "Color.h"
 #include "ICVar.h"

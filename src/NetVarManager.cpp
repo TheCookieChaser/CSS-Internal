@@ -1,140 +1,61 @@
-#include "NetVarManager.h"
+#include "NetvarManager.h"
+#include <cctype>
 
-void CNetVarManager::Initialize()
+#define DUMP_NETVARS
+
+#ifdef DUMP_NETVARS
+#define IF_DUMPING(...) __VA_ARGS__
+#else
+#define IF_DUMPING(...)
+#endif
+
+IF_DUMPING(static FILE* s_fp;)
+
+netvar_manager::netvar_manager()
 {
-	m_tables.clear();
+	IF_DUMPING(fopen_s(&s_fp, "netvar_dump.txt", "w");)
+		for (auto clazz = g_client->GetAllClasses(); clazz; clazz = clazz->m_pNext)
+			if (clazz->m_pRecvTable)
+				dump_recursive(clazz->m_pNetworkName, clazz->m_pRecvTable, 0);
+	IF_DUMPING(fclose(s_fp);)
+}
 
-	ClientClass *clientClass = client->GetAllClasses();
-	if (!clientClass)
-		return;
-
-	while (clientClass)
+auto netvar_manager::dump_recursive(const char* base_class, RecvTable* table, const std::uint16_t offset) -> void
+{
+	for (auto i = 0; i < table->m_nProps; ++i)
 	{
-		RecvTable *recvTable = clientClass->m_pRecvTable;
-		m_tables.push_back(recvTable);
+		const auto prop_ptr = &table->m_pProps[i];
 
-		clientClass = clientClass->m_pNext;
-	}
-}
+		//Skip trash array items
+		if (!prop_ptr || isdigit(prop_ptr->m_pVarName[0]))
+			continue;
 
-int CNetVarManager::GetOffset(const char *tableName, const char *propName)
-{
-	int offset = Get_Prop(tableName, propName);
-	if (!offset)
-	{
-		return 0;
-	}
-	return offset;
-}
+		//We dont care about the base class, we already know that
+		if (strcmp(prop_ptr->m_pVarName, "baseclass") == 0)
+			continue;
 
-bool CNetVarManager::HookProp(const char *tableName, const char *propName, RecvVarProxyFn fun)
-{
-	RecvProp *recvProp = 0;
-	Get_Prop(tableName, propName, &recvProp);
-	if (!recvProp)
-		return false;
-
-	recvProp->m_ProxyFn = fun;
-
-	return true;
-}
-
-int CNetVarManager::Get_Prop(const char *tableName, const char *propName, RecvProp **prop)
-{
-	RecvTable *recvTable = GetTable(tableName);
-	if (!recvTable)
-		return 0;
-
-	int offset = Get_Prop(recvTable, propName, prop);
-	if (!offset)
-		return 0;
-
-	return offset;
-}
-
-int CNetVarManager::Get_Prop(RecvTable *recvTable, const char *propName, RecvProp **prop)
-{
-	int extraOffset = 0;
-	for (int i = 0; i < recvTable->m_nProps; ++i)
-	{
-		RecvProp *recvProp = &recvTable->m_pProps[i];
-		RecvTable *child = recvProp->m_pDataTable;
-
-		if (child && (child->m_nProps > 0))
+		if (prop_ptr->m_RecvType == DPT_DataTable &&
+			prop_ptr->m_pDataTable != nullptr &&
+			prop_ptr->m_pDataTable->m_pNetTableName[0] == 'D') // Skip shitty tables
 		{
-			int tmp = Get_Prop(child, propName, prop);
-			if (tmp)
-				extraOffset += (recvProp->m_Offset + tmp);
+			dump_recursive(base_class, prop_ptr->m_pDataTable, std::uint16_t(offset + prop_ptr->m_Offset));
 		}
 
-		if (stricmp(recvProp->m_pVarName, propName))
-			continue;
+		char hash_name[256];
 
-		if (prop)
-			*prop = recvProp;
+		strcpy_s(hash_name, base_class);
+		strcat_s(hash_name, "->");
+		strcat_s(hash_name, prop_ptr->m_pVarName);
 
-		return (recvProp->m_Offset + extraOffset);
-	}
+		const auto hash = fnv::hash_runtime(hash_name);
+		const auto total_offset = std::uint16_t(offset + prop_ptr->m_Offset);
 
-	return extraOffset;
-}
+		IF_DUMPING(fprintf(s_fp, "%s\t0x%04X\t%s\n", base_class, total_offset, prop_ptr->m_pVarName);)
 
-RecvTable *CNetVarManager::GetTable(const char *tableName)
-{
-	if (m_tables.empty())
-		return 0;
-
-	for each (RecvTable *table in m_tables)
-	{
-		if (!table)
-			continue;
-
-		if (stricmp(table->m_pNetTableName, tableName) == 0)
-			return table;
-	}
-
-	return 0;
-}
-
-void CNetVarManager::DumpTable(RecvTable *table, int depth)
-{
-	std::string pre("");
-	for (int i = 0; i<depth; i++)
-		pre.append("\t");
-
-	m_file << pre << table->m_pNetTableName << "\n";
-
-	for (int i = 0; i < table->m_nProps; i++)
-	{
-		RecvProp *prop = &table->m_pProps[i];
-		if (!prop) continue;
-
-		std::string varName(prop->m_pVarName);
-
-		if (varName.find("baseclass") == 0 || varName.find("0") == 0 || varName.find("1") == 0 || varName.find("2") == 0)
-			continue;
-
-		m_file << pre << "\t " << varName << " "
-			<< std::setfill('_') << std::setw(60 - varName.length() - (depth * 4))
-			<< "[0x" << std::setfill('0') << std::setw(8) << std::hex
-			<< std::uppercase << prop->m_Offset << "]\n";
-
-		if (prop->m_pDataTable)
-			DumpTable(prop->m_pDataTable, depth + 1);
+			m_props[hash] =
+		{
+			prop_ptr,
+			total_offset
+		};
 	}
 }
-
-void CNetVarManager::DumpNetvars()
-{
-	m_file.open("NetVars.txt");
-
-	for (ClientClass *pClass = client->GetAllClasses(); pClass != NULL; pClass = pClass->m_pNext)
-	{
-		RecvTable *table = pClass->m_pRecvTable;
-		DumpTable(table, 0);
-	}
-
-	m_file.close();
-}
-
-CNetVarManager* NetVarManager = new CNetVarManager;

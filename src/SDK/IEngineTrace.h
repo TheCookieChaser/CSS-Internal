@@ -151,12 +151,12 @@ public:
 	int	GetPointContents(const Vector &vecAbsPosition, int contentsMask = MASK_ALL, IClientEntity** ppEntity = NULL)
 	{
 		typedef int(__thiscall* fnGetPointContents)(void*, const Vector&, int, IClientEntity**);
-		return CallVFunction<fnGetPointContents>(this, 0)(this, vecAbsPosition, contentsMask, ppEntity);
+		return get_vfunc<fnGetPointContents>(this, 0)(this, vecAbsPosition, contentsMask, ppEntity);
 	}
 
 	void TraceRay(const Ray_t &ray, unsigned int fMask, ITraceFilter* pTraceFilter, trace_t* pTrace)
 	{
 		typedef void(__thiscall* fnTraceRay)(void*, const Ray_t&, unsigned int, ITraceFilter*, trace_t*);
-		CallVFunction<fnTraceRay>(this, 4)(this, ray, fMask, pTraceFilter, pTrace);
+		get_vfunc<fnTraceRay>(this, 4)(this, ray, fMask, pTraceFilter, pTrace);
 	}
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDK.h"
+#include "../virtuals.h"
 
 struct bf_read;
 using CBaseHandle = unsigned long;
@@ -31,19 +32,19 @@ public:
 	const void*	GetModel()
 	{
 		typedef const void*(__thiscall* GetModel_t)(void*);
-		return CallVFunction<GetModel_t>(this, 9)(this);
+		return get_vfunc<GetModel_t>(this, 9)(this);
 	}
 
 	bool SetupBones(matrix3x4 *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime)
 	{
 		typedef bool(__thiscall* SetupBones_t)(void*, matrix3x4*, int, int, float);
-		return CallVFunction<SetupBones_t>(this, 16)(this, pBoneToWorldOut, nMaxBones, boneMask, currentTime);
+		return get_vfunc<SetupBones_t>(this, 16)(this, pBoneToWorldOut, nMaxBones, boneMask, currentTime);
 	}
 
 	void GetRenderBounds(Vector& mins, Vector& maxs)
 	{
 		typedef bool(__thiscall* SetupBones_t)(void*, Vector&, Vector&);
-		CallVFunction<SetupBones_t>(this, 20)(this, mins, maxs);
+		get_vfunc<SetupBones_t>(this, 20)(this, mins, maxs);
 	}
 };
 

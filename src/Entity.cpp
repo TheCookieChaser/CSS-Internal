@@ -22,11 +22,11 @@ Vector Entity::GetHitboxPosition(C_CSPlayer* pEntity, int HitboxID)
 	if (!model)
 		return Vector(0, 0, 0);
 
-	studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
+	studiohdr_t* hdr = g_modelinfo->GetStudiomodel(model);
 	if (!hdr)
 		return Vector(0, 0, 0);
 
-	mstudiohitboxset_t* set = hdr->pHitboxSet(pEntity->GetHitboxSet());
+	mstudiohitboxset_t* set = hdr->pHitboxSet(pEntity->get_hitbox_set());
 	if (!set)
 		return Vector(0, 0, 0);
 
@@ -44,15 +44,15 @@ Vector Entity::GetHitboxPosition(C_CSPlayer* pEntity, int HitboxID)
 
 bool Entity::IsVisible(C_CSPlayer* pEntity, int HitboxID)
 {
-	auto pLocal = static_cast<C_CSPlayer*>(entitylist->GetClientEntity(engine->GetLocalPlayer()));
+	auto pLocal = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	trace_t tr;
 	Ray_t ray;
 
 	CTraceFilter filter;
 	filter.pSkip = pLocal;
 
-	ray.Init(pLocal->GetEyePosition(), GetHitboxPosition(pEntity, HitboxID));
-	trace->TraceRay(ray, MASK_NPCWORLDSTATIC | CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_MONSTER | CONTENTS_WINDOW | CONTENTS_DEBRIS | CONTENTS_HITBOX, &filter, &tr);
+	ray.Init(pLocal->get_eye_position(), GetHitboxPosition(pEntity, HitboxID));
+	g_trace->TraceRay(ray, MASK_NPCWORLDSTATIC | CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_MONSTER | CONTENTS_WINDOW | CONTENTS_DEBRIS | CONTENTS_HITBOX, &filter, &tr);
 
 	return (tr.m_pEnt == pEntity || tr.fraction == 1.0f);
 }

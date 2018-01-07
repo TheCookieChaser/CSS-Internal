@@ -19,11 +19,11 @@
     <Filter Include="SDK">
       <UniqueIdentifier>{717a64e0-1d48-4fd0-9118-12d8f5080d7a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGUI">
-      <UniqueIdentifier>{ec9d57ff-955a-4bcb-aa46-af8cbda479d0}</UniqueIdentifier>
+    <Filter Include="Source Files\deps">
+      <UniqueIdentifier>{cbdfd196-e220-4046-8a7f-cbb54f4ebec3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGUI\DX9">
-      <UniqueIdentifier>{2c12f3ed-35ed-4496-a6d7-2c536229a3a1}</UniqueIdentifier>
+    <Filter Include="Source Files\deps\imgui">
+      <UniqueIdentifier>{b649c2dd-e8f6-4440-bab5-51ff86ace733}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,9 +36,6 @@
     <ClCompile Include="Reset.cpp">
       <Filter>Source Files\Hooks</Filter>
     </ClCompile>
-    <ClCompile Include="DrawIndexedPrimitive.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="Tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,15 +44,6 @@
     </ClCompile>
     <ClCompile Include="Settings.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\imgui.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\imgui_draw.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\DX9\imgui_impl_dx9.cpp">
-      <Filter>ImGUI\DX9</Filter>
     </ClCompile>
     <ClCompile Include="CreateMove.cpp">
       <Filter>Source Files\Hooks</Filter>
@@ -117,6 +105,18 @@
     <ClCompile Include="SDK\VMatrix.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
+    <ClCompile Include="..\deps\imgui\examples\directx9_example\imgui_impl_dx9.cpp">
+      <Filter>Source Files\deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\imgui\imgui.cpp">
+      <Filter>Source Files\deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\imgui\imgui_demo.cpp">
+      <Filter>Source Files\deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\imgui\imgui_draw.cpp">
+      <Filter>Source Files\deps\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vmthooks.h">
@@ -137,32 +137,8 @@
     <ClInclude Include="Interfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SDK\Defines.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imconfig.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imgui.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imgui_internal.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\stb_rect_pack.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\stb_textedit.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\stb_truetype.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\DX9\imgui_impl_dx9.h">
-      <Filter>ImGUI\DX9</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IBaseClientDll.h">
       <Filter>SDK</Filter>
@@ -186,9 +162,6 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="NetVarManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FnvHash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IVEngineClient.h">
@@ -260,9 +233,6 @@
     <ClInclude Include="Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\Convar.h">
       <Filter>SDK</Filter>
     </ClInclude>
@@ -270,6 +240,15 @@
       <Filter>SDK</Filter>
     </ClInclude>
     <ClInclude Include="SDK\VMatrix.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="fnv_hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="virtuals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\definitions.h">
       <Filter>SDK</Filter>
     </ClInclude>
   </ItemGroup>

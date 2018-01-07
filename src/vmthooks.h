@@ -1,98 +1,45 @@
 #pragma once
 
+#include <cstdint>
 #include <Windows.h>
-#include <stdio.h>
-#include <map>
+#include <unordered_map>
+#include "tools.h"
 
-typedef DWORD** PPDWORD;
-class VFTableHook
+class cvmt_hook
 {
-	VFTableHook(const VFTableHook&) = delete;
 public:
-	VFTableHook(PPDWORD ppClass, bool bReplace)
+	cvmt_hook(void* classptr)
 	{
-		m_ppClassBase = ppClass;
-		m_bReplace = bReplace;
-		if (bReplace) {
-			m_pOriginalVMTable = *ppClass;
-			uint32_t dwLength = CalculateLength();
+		this->m_class_pointer = reinterpret_cast<void***>(classptr);
+		m_old_vmt = *m_class_pointer;
 
-			m_pNewVMTable = new DWORD[dwLength];
-			memcpy(m_pNewVMTable, m_pOriginalVMTable, dwLength * sizeof(DWORD));
+		size_t table_size = 0;
+		while (m_old_vmt[table_size] && Tools::IsCodePtr(m_old_vmt[table_size]))
+			table_size++;
 
-			DWORD old;
-			VirtualProtect(m_ppClassBase, sizeof(DWORD), PAGE_EXECUTE_READWRITE, &old);
-			*m_ppClassBase = m_pNewVMTable;
-			VirtualProtect(m_ppClassBase, sizeof(DWORD), old, &old);
+		m_new_vmt = new void*[table_size + 1];
+		memcpy(&m_new_vmt[1], m_old_vmt, sizeof(void*) * table_size);
+		m_new_vmt[0] = m_old_vmt[-1];
 
-		}
-		else {
-			m_pOriginalVMTable = *ppClass;
-			m_pNewVMTable = *ppClass;
-		}
-	}
-	~VFTableHook()
-	{
-		RestoreTable();
-		if (m_bReplace && m_pNewVMTable) delete[] m_pNewVMTable;
+		*m_class_pointer = &m_new_vmt[1];
 	}
 
-	void RestoreTable()
+	~cvmt_hook()
 	{
-		if (m_bReplace) {
-			DWORD old;
-			VirtualProtect(m_ppClassBase, sizeof(DWORD), PAGE_EXECUTE_READWRITE, &old);
-			*m_ppClassBase = m_pOriginalVMTable;
-			VirtualProtect(m_ppClassBase, sizeof(DWORD), old, &old);
-		}
-		else {
-			for (auto& pair : m_vecHookedIndexes) {
-				Unhook(pair.first);
-			}
-		}
+		*m_class_pointer = m_old_vmt;
+		delete[] m_new_vmt;
 	}
 
-	template<class Type>
-	Type Hook(uint32_t index, Type fnNew)
+	template<typename fn = void*>
+	fn hook(size_t index, void* new_function)
 	{
-		DWORD dwOld = (DWORD)m_pOriginalVMTable[index];
-		m_pNewVMTable[index] = (DWORD)fnNew;
-		m_vecHookedIndexes.insert(std::make_pair(index, (DWORD)dwOld));
-		return (Type)dwOld;
-	}
-	void Unhook(uint32_t index)
-	{
-		auto it = m_vecHookedIndexes.find(index);
-		if (it != m_vecHookedIndexes.end()) {
-			m_pNewVMTable[index] = (DWORD)it->second;
-			m_vecHookedIndexes.erase(it);
-		}
-	}
-
-	template<class Type>
-	Type GetOriginal(uint32_t index)
-	{
-		return (Type)m_pOriginalVMTable[index];
+		if (new_function)
+			m_new_vmt[index + 1] = new_function;
+		return reinterpret_cast<fn>(m_old_vmt[index]);
 	}
 
 private:
-	uint32_t CalculateLength()
-	{
-		uint32_t dwIndex = 0;
-		if (!m_pOriginalVMTable) return 0;
-		for (dwIndex = 0; m_pOriginalVMTable[dwIndex]; dwIndex++) {
-			if (IsBadCodePtr((FARPROC)m_pOriginalVMTable[dwIndex])) {
-				break;
-			}
-		}
-		return dwIndex;
-	}
-
-private:
-	std::map<uint32_t, DWORD> m_vecHookedIndexes;
-
-	PPDWORD m_ppClassBase;
-	PDWORD m_pOriginalVMTable;
-	PDWORD m_pNewVMTable;
-	bool m_bReplace;
+	void*** m_class_pointer = nullptr;
+	void** m_old_vmt = nullptr;
+	void** m_new_vmt = nullptr;
 };
