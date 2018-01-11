@@ -27,6 +27,5 @@
 #include "UtlBuffer.h"
 #include "UtlString.h"
 #include "UtlVector.h"
-
-#include "../NetVarManager.h"
-#include "../Interfaces.h"
+#include "IVDebugOverlay.h"
+#include "CGlobalVars.h"

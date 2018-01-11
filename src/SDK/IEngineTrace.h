@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDK.h"
+#include "sdk.h"
 
 #define	MASK_ALL					(0xFFFFFFFF)
 
@@ -152,6 +152,12 @@ public:
 	{
 		typedef int(__thiscall* fnGetPointContents)(void*, const Vector&, int, IClientEntity**);
 		return get_vfunc<fnGetPointContents>(this, 0)(this, vecAbsPosition, contentsMask, ppEntity);
+	}
+
+	void ClipRayToEntity(const Ray_t &ray, unsigned int fMask, IHandleEntity *pEnt, trace_t *pTrace)
+	{
+		typedef void(__thiscall* ClipRayToEntity_fn)(void*, const Ray_t &ray, unsigned int fMask, IHandleEntity *pEnt, trace_t *pTrace);
+		get_vfunc<ClipRayToEntity_fn>(this, 2)(this, ray, fMask, pEnt, pTrace);
 	}
 
 	void TraceRay(const Ray_t &ray, unsigned int fMask, ITraceFilter* pTraceFilter, trace_t* pTrace)

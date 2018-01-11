@@ -1,28 +1,31 @@
 #pragma once
 
-#include "Hooks.h"
-#include "Settings.h"
-#include "Config.h"
+#include <imgui/imgui.h>
 
-enum class Tabs : int
+class cmenu
 {
-	Aimbot,
-	Visuals,
-	Misc,
-	Colors,
-	Configs,
-	Players
+public:
+	void render();
+
+private:
+	enum class tabs_e
+	{
+		Aimbot,
+		Visuals,
+		Misc,
+		Colors,
+		Configs,
+		Players
+	};
+
+	void aimbot_tab();
+	void visuals_tab();
+	void misc_tab();
+	void colors_tab();
+	void configs_tab();
+	void players_tab();
+
+	tabs_e m_tab_selected;
 };
 
-namespace Menu
-{
-	void EndScene();
-	void AimbotTab();
-	void VisualsTab();
-	void MiscTab();
-	void ColorsTab();
-	void ConfigsTab();
-	void PlayersTab();
-
-	extern Tabs TabSelected;
-}
+extern cmenu* menu;

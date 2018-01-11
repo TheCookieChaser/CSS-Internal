@@ -1,5 +1,5 @@
 #include "Convar.h"
-#include "SDK.h"
+#include "../interfaces.h"
 #include "characterset.h"
 #include "UtlBuffer.h"
 

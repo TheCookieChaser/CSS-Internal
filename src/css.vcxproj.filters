@@ -13,97 +13,58 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Hooks">
-      <UniqueIdentifier>{085aff63-5896-4f63-b7ea-eee1388d9ed5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SDK">
-      <UniqueIdentifier>{717a64e0-1d48-4fd0-9118-12d8f5080d7a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\deps">
       <UniqueIdentifier>{cbdfd196-e220-4046-8a7f-cbb54f4ebec3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\deps\imgui">
       <UniqueIdentifier>{b649c2dd-e8f6-4440-bab5-51ff86ace733}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\hooks">
+      <UniqueIdentifier>{085aff63-5896-4f63-b7ea-eee1388d9ed5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hacks">
+      <UniqueIdentifier>{51faec4e-1f8c-4395-8a99-211b22cd303e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hacks">
+      <UniqueIdentifier>{8e7d7ca1-fff7-4dc3-b0a6-547f5d4b3eb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools">
+      <UniqueIdentifier>{1c98f162-8479-4644-a643-108bf7b1cfbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tools">
+      <UniqueIdentifier>{5d21decd-3ae6-4c10-b94f-66800c997c8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hooks">
+      <UniqueIdentifier>{59be98dc-a9ba-446e-b10f-4d6ecf93ed7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sdk">
+      <UniqueIdentifier>{717a64e0-1d48-4fd0-9118-12d8f5080d7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DllMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EndScene.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="Reset.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="Tools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WndProc.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="Settings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CreateMove.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="SDK\Vector.cpp">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\CRC.cpp">
-      <Filter>SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="Interfaces.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetVarManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WriteUsercmdDeltaToBuffer.cpp">
-      <Filter>Source Files\Hooks</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\UtlBuffer.cpp">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\characterset.cpp">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Vector2D.cpp">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\UtlString.cpp">
-      <Filter>SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="Aimbot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Visuals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Convar.cpp">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="SDK\VMatrix.cpp">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\imgui\examples\directx9_example\imgui_impl_dx9.cpp">
       <Filter>Source Files\deps\imgui</Filter>
@@ -117,139 +78,199 @@
     <ClCompile Include="..\deps\imgui\imgui_draw.cpp">
       <Filter>Source Files\deps\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="hacks\aimbot.cpp">
+      <Filter>Source Files\hacks</Filter>
+    </ClCompile>
+    <ClCompile Include="hacks\misc.cpp">
+      <Filter>Source Files\hacks</Filter>
+    </ClCompile>
+    <ClCompile Include="hacks\visuals.cpp">
+      <Filter>Source Files\hacks</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\config.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\draw_manager.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\entity.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\math.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\netvar_manager.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\tools.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interfaces.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\CreateMove.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\EndScene.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\hooks.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\Reset.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\WndProc.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\WriteUsercmdDeltaToBuffer.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\FrameStageNotify.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vmthooks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hooks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDK\SDK.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\Color.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Interfaces.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Settings.h">
-      <Filter>Header Files</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IBaseClientDll.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\CInput.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Vector.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\CRC.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IClientEntityList.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IClientEntity.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\CBaseEntity.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="NetVarManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IVEngineClient.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\player_info.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IVModelInfo.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\studio.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\CBaseClientState.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IAppSystem.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\ICVar.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\UtlBuffer.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Vector2D.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\characterset.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\UtlMemory.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\UtlString.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\UtlVector.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Aimbot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Visuals.h">
-      <Filter>Header Files</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IEngineTrace.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\bspflags.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>Header Files</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Convar.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\IConVar.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\VMatrix.h">
-      <Filter>SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="fnv_hash.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="virtuals.h">
-      <Filter>Header Files</Filter>
+      <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\definitions.h">
-      <Filter>SDK</Filter>
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\config.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\draw_manager.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\entity.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\fnv_hash.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\math.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\netvar_manager.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\tools.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\virtuals.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\vmt_hook.h">
+      <Filter>Header Files\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="hacks\aimbot.h">
+      <Filter>Header Files\hacks</Filter>
+    </ClInclude>
+    <ClInclude Include="hacks\misc.h">
+      <Filter>Header Files\hacks</Filter>
+    </ClInclude>
+    <ClInclude Include="hacks\visuals.h">
+      <Filter>Header Files\hacks</Filter>
+    </ClInclude>
+    <ClInclude Include="interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\hooks.h">
+      <Filter>Header Files\hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\sdk.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\IVDebugOverlay.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\CGlobalVars.h">
+      <Filter>sdk</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

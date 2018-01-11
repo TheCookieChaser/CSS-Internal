@@ -282,3 +282,5 @@ public:
 
 	float w;
 };
+
+typedef Vector QAngle;

@@ -1,4 +1,4 @@
-#include "Hooks.h"
+#include "hooks.h"
 #include "Settings.h"
 #include "SDK\CBaseEntity.h"
 #include "Visuals.h"

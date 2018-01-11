@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SDK\SDK.h"
-#include "Tools.h"
+#include "sdk/sdk.h"
 #include <d3d9.h>
 #include <d3dx9.h>
 
@@ -13,6 +12,7 @@ extern IClientEntityList*	g_entitylist;
 extern IVEngineClient*		g_engine;
 extern IVModelInfo*			g_modelinfo;
 extern IEngineTrace*		g_trace;
+extern IVDebugOverlay*		g_debugoverlay;
 extern ICvar*				g_cvar;
 //------------------------------------------//
 // Pattern Scan
@@ -20,6 +20,7 @@ extern ICvar*				g_cvar;
 extern CInput*				g_input;
 extern CBaseClientState*	g_clientstate;
 extern IDirect3DDevice9*	g_d3ddevice;
+extern CGlobalVars*			g_globalvars;
 //------------------------------------------//
 // Initialize Interfaces
 //------------------------------------------//

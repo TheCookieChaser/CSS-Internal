@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SDK.h"
-#include "../virtuals.h"
+#include "../tools/virtuals.h"
 
 struct bf_read;
 using CBaseHandle = unsigned long;
