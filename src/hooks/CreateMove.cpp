@@ -51,42 +51,43 @@ void triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon* weapon)
 	if (!weapon_data)
 		return;
 
+	weapon->UpdateAccuracyPenalty();
+
 	RandomSeed((cmd->random_seed & 0xFF) + 1);
 
-	auto v39 = RandomFloat(0.0, 6.2831855);
-	auto v21 = RandomFloat(0.0, weapon->GetInaccuracy());
-	auto v37 = cos(v39) * v21;
-	auto v38 = v21 * sin(v39);
-
-	float v23, v24;
-	float v32[16];
-	float v33[16];
+	auto rand1 = RandomFloat(0.0, M_PI * 2.f);
+	auto rand2 = RandomFloat(0.0, weapon->GetInaccuracy());
+	auto v37 = rand2 * cosf(rand1);
+	auto v38 = rand2 * sinf(rand1);
 
 	Vector vecStart = local->get_eye_position();
-
-	weapon->UpdateAccuracyPenalty();
 
 	auto viewangles = cmd->viewangles;
 	viewangles += local->get_aim_punch() * 2.f;
 
+	std::array<float, 16>spreads_x;
+	std::array<float, 16>spreads_y;
+
+	auto server_time = local->get_tick_base() * g_globalvars->interval_per_tick;
+
 	for (auto iBullet = 0; iBullet < weapon_data->Bullets; ++iBullet)
 	{
-		v39 = RandomFloat(0.0, 6.2831855);
-		v23 = RandomFloat(0.0, weapon->GetSpread());
-		v24 = v39;
-		v32[iBullet] = cos(v39) * v23;
-		v33[iBullet] = v23 * sin(v24);
+		auto rand3 = RandomFloat(0.0, M_PI * 2.f);
+		auto rand4 = RandomFloat(0.0, weapon->GetSpread());
 
-		auto x = v32[iBullet] + v37;
-		auto y = v33[iBullet] + v38;
+		spreads_x.at(iBullet) = rand4 * cosf(rand3);
+		spreads_y.at(iBullet) = rand4 * sinf(rand3);
+
+		spreads_x.at(iBullet) += v37;
+		spreads_y.at(iBullet) += v38;
 
 		Vector vecDirShooting, vecRight, vecUp;
 		math::AngleVectors(viewangles, &vecDirShooting, &vecRight, &vecUp);
 
-		Vector vecDir = vecDirShooting + (vecRight * x) + (vecUp * y);
+		Vector vecDir = vecDirShooting + (vecRight * spreads_x.at(iBullet)) + (vecUp * spreads_y.at(iBullet));
 		vecDir.NormalizeInPlace();
 
-		Vector vecEnd = vecStart + vecDir * 10000;
+		Vector vecEnd = vecStart + vecDir * weapon_data->Range;
 
 		Ray_t ray;
 		ray.Init(vecStart, vecEnd);
@@ -96,12 +97,11 @@ void triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon* weapon)
 
 		trace_t tr;
 
-		g_trace->TraceRay(ray, 0x4600400B, &filter, &tr);
+		g_trace->TraceRay(ray, MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX, &filter, &tr);
 
 		g_debugoverlay->AddBoxOverlay(tr.endpos, Vector(-2, -2, -2), Vector(2, 2, 2), Vector(0, 0, 0), 255, 255, 0, 127, -1.f);
 
-		auto server_time = local->get_tick_base() * g_globalvars->interval_per_tick;
-		if (tr.m_pEnt && tr.hitgroup > 0 && tr.hitgroup <= 20 && server_time > weapon->GetNextPrimaryAttack())
+		if (tr.m_pEnt && tr.hitgroup > 0 && tr.hitgroup < 2 && server_time > weapon->GetNextPrimaryAttack())
 		{
 			cmd->buttons |= IN_ATTACK;
 
