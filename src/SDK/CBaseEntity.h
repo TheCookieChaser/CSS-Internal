@@ -80,7 +80,9 @@ public:
 	char primary_ammo[32]; //0x0180
 	char secondary_ammo[32]; //0x01A0
 	char SoundData[80]; //0x01C0
-	char pad_0210[1208]; //0x0210
+	char pad_0210[1200]; //0x0210
+	int32_t iAmmoType; //0x06C0
+	char pad_06C4[4]; //0x06C4
 	bool MeleeWeapon; //0x06C8
 	bool BuiltRightHanded; //0x06C9
 	bool AllowFlipping; //0x06CA
@@ -141,7 +143,7 @@ public:
 	float IdleInterval; //0x0900
 	int32_t WeaponPrice; //0x0904
 	int32_t WeaponPrice2; //0x0908
-
+	
 }; //Size: 0x090C
 
 class C_BaseCombatWeapon : public C_BaseEntity

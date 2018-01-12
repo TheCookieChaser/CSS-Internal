@@ -135,6 +135,15 @@
     <ClCompile Include="hooks\FrameStageNotify.cpp">
       <Filter>Source Files\hooks</Filter>
     </ClCompile>
+    <ClCompile Include="sdk\checksum_md5.cpp">
+      <Filter>sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\GetUserCmd.cpp">
+      <Filter>Source Files\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\game.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SDK\Color.h">
@@ -271,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="sdk\CGlobalVars.h">
       <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\checksum_md5.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\game.h">
+      <Filter>Header Files\tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,20 +15,24 @@ void cdrawmanager::begin()
 void cdrawmanager::render()
 {
 	auto drawlist = ImGui::GetCurrentWindow()->DrawList;
-	for (size_t i = 0; i < m_draw_list.size(); i++)
+	cdrawinfo* drawinfo;
+	for (auto drawinfo : m_drawinfos)
 	{
-		auto item = m_draw_list.at(i);
-		if (!item.render)
+		if (!drawinfo.render)
 			continue;
 
-		if (item.type == draw_types_e::line)
-			drawlist->AddLine(item.pos, item.pos2, item.col, item.thickness);
-		if (item.type == draw_types_e::rect)
-			drawlist->AddRect(item.pos, item.pos2, item.col, item.rounding, item.flags, item.thickness);
-		if (item.type == draw_types_e::filled_rect)
-			drawlist->AddRectFilled(item.pos, item.pos2, item.col, item.rounding, item.flags);
-		if (item.type == draw_types_e::text)
-			drawlist->AddText(item.pos, item.col, item.text_begin, item.text_end);
+		if (drawinfo.type == draw_types_e::line)
+			drawlist->AddLine(drawinfo.pos, drawinfo.pos2, drawinfo.col, drawinfo.thickness);
+		if (drawinfo.type == draw_types_e::rect)
+			drawlist->AddRect(drawinfo.pos, drawinfo.pos2, drawinfo.col, drawinfo.rounding, drawinfo.flags, drawinfo.thickness);
+		if (drawinfo.type == draw_types_e::filled_rect)
+			drawlist->AddRectFilled(drawinfo.pos, drawinfo.pos2, drawinfo.col, drawinfo.rounding, drawinfo.flags);
+		if (drawinfo.type == draw_types_e::circle)
+			drawlist->AddCircle(drawinfo.pos, drawinfo.radius, drawinfo.col, drawinfo.num_segments, drawinfo.thickness);
+		if (drawinfo.type == draw_types_e::filled_circle)
+			drawlist->AddCircleFilled(drawinfo.pos, drawinfo.radius, drawinfo.col, drawinfo.num_segments);
+		if (drawinfo.type == draw_types_e::text)
+			drawlist->AddText(drawinfo.pos, drawinfo.col, drawinfo.text_begin, drawinfo.text_end);
 	}
 }
 
@@ -43,13 +47,13 @@ void cdrawmanager::end()
 
 void cdrawmanager::clear()
 {
-	m_draw_list.fill(draw_info_s{ });
-	m_counter = 0;
+	m_drawinfos.clear();
+	m_drawinfos.push_back(cdrawinfo());
 }
 
 void cdrawmanager::add_line(const ImVec2 & a, const ImVec2 & b, ImU32 col, float thickness)
 {
-	draw_info_s item;
+	cdrawinfo item;
 	item.type = draw_types_e::line;
 	item.pos = a;
 	item.pos2 = b;
@@ -57,13 +61,12 @@ void cdrawmanager::add_line(const ImVec2 & a, const ImVec2 & b, ImU32 col, float
 	item.thickness = thickness;
 	item.render = true;
 
-	m_draw_list.at(m_counter) = item;
-	m_counter++;
+	m_drawinfos.push_back(item);
 }
 
 void cdrawmanager::add_rect(const ImVec2 & a, const ImVec2 & b, ImU32 col, float rounding, int rounding_corners_flags, float thickness)
 {
-	draw_info_s item;
+	cdrawinfo item;
 	item.type = draw_types_e::rect;
 	item.pos = a;
 	item.pos2 = b;
@@ -73,13 +76,12 @@ void cdrawmanager::add_rect(const ImVec2 & a, const ImVec2 & b, ImU32 col, float
 	item.thickness = thickness;
 	item.render = true;
 
-	m_draw_list.at(m_counter) = item;
-	m_counter++;
+	m_drawinfos.push_back(item);
 }
 
 void cdrawmanager::add_filled_rect(const ImVec2 & a, const ImVec2 & b, ImU32 col, float rounding, int rounding_corners_flags)
 {
-	draw_info_s item;
+	cdrawinfo item;
 	item.type = draw_types_e::filled_rect;
 	item.pos = a;
 	item.pos2 = b;
@@ -88,13 +90,39 @@ void cdrawmanager::add_filled_rect(const ImVec2 & a, const ImVec2 & b, ImU32 col
 	item.flags = rounding_corners_flags;
 	item.render = true;
 
-	m_draw_list.at(m_counter) = item;
-	m_counter++;
+	m_drawinfos.push_back(item);
+}
+
+void cdrawmanager::add_circle(const ImVec2 & centre, float radius, ImU32 col, int num_segments, float thickness)
+{
+	cdrawinfo item;
+	item.type = draw_types_e::circle;
+	item.pos = centre;
+	item.radius = radius;
+	item.col = col;
+	item.num_segments = num_segments;
+	item.thickness = thickness;
+	item.render = true;
+
+	m_drawinfos.push_back(item);
+}
+
+void cdrawmanager::add_filled_circle(const ImVec2 & centre, float radius, ImU32 col, int num_segments)
+{
+	cdrawinfo item;
+	item.type = draw_types_e::filled_circle;
+	item.pos = centre;
+	item.radius = radius;
+	item.col = col;
+	item.num_segments = num_segments;
+	item.render = true;
+
+	m_drawinfos.push_back(item);
 }
 
 void cdrawmanager::add_text(const ImVec2 & pos, ImU32 col, const char * text_begin, const char * text_end)
 {
-	draw_info_s item;
+	cdrawinfo item;
 	item.type = draw_types_e::text;
 	item.pos = pos;
 	item.col = col;
@@ -102,6 +130,5 @@ void cdrawmanager::add_text(const ImVec2 & pos, ImU32 col, const char * text_beg
 	item.text_end = text_end;
 	item.render = true;
 
-	m_draw_list.at(m_counter) = item;
-	m_counter++;
+	m_drawinfos.push_back(item);
 }

@@ -29,3 +29,4 @@
 #include "UtlVector.h"
 #include "IVDebugOverlay.h"
 #include "CGlobalVars.h"
+#include "checksum_md5.h"

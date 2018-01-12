@@ -4,7 +4,7 @@ cvisuals* visuals = new cvisuals();
 
 void cvisuals::render()
 {
-	drawmanager->add_text({ 10,10 }, config.colors_watermark, "CSS-Internal");
+	drawmanager->add_text({ 10.f, 10.f }, config.colors_watermark, "CSS-Internal");
 
 	render_esp();
 }

@@ -2,11 +2,13 @@
 
 cvmt_hook* d3ddevice_table = nullptr;
 cvmt_hook* client_table = nullptr;
+cvmt_hook* input_table = nullptr;
 
-Reset_fn		oReset = nullptr;
-EndScene_fn		oEndScene = nullptr;
-CreateMove_fn	oCreateMove = nullptr;
+Reset_fn			oReset = nullptr;
+EndScene_fn			oEndScene = nullptr;
+CreateMove_fn		oCreateMove = nullptr;
 FrameStageNotify_fn	oFrameStageNotify = nullptr;
+GetUserCmd_fn		oGetUserCmd = nullptr;
 
 void initialize_hooks()
 {
@@ -20,8 +22,11 @@ void initialize_hooks()
 
 	client_table = new cvmt_hook(g_client);
 	oCreateMove = client_table->hook<CreateMove_fn>(21, CreateMove);
-	client_table->hook(23, WriteUsercmdDeltaToBuffer);
+	//client_table->hook(23, WriteUsercmdDeltaToBuffer);
 	oFrameStageNotify = client_table->hook<FrameStageNotify_fn>(35, FrameStageNotify);
+
+	input_table = new cvmt_hook(g_input);
+	oGetUserCmd = input_table->hook<GetUserCmd_fn>(8, GetUserCmd);
 }
 
 void uninitialize_hooks()
@@ -30,4 +35,5 @@ void uninitialize_hooks()
 
 	delete d3ddevice_table;
 	delete client_table;
+	delete input_table;
 }

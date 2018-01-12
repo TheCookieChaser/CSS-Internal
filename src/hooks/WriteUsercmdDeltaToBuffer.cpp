@@ -14,26 +14,17 @@ void ValidateUserCmd(CUserCmd *usercmd, int sequence_number)
 
 CUserCmd* GetUserCmd(int sequence_number)
 {
-	Assert(m_pCommands);
-
-	CUserCmd *usercmd = &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];
-
-	if (usercmd->command_number != sequence_number)
-	{
-		return NULL;
-	}
-
-	return usercmd;
+	return  &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];;
 }
 
 bool __fastcall WriteUsercmdDeltaToBuffer(void* ecx, void* edx, void* buf, int from, int to, bool isnewcommand)
 {
-	CUserCmd v16;
+	CUserCmd nullcmd;
 	CUserCmd *v7, *v8, *v9, *v33;
 
 	if (from == -1)
 	{
-		v7 = &v16;
+		v7 = &nullcmd;
 	}
 	else
 	{
@@ -43,7 +34,7 @@ bool __fastcall WriteUsercmdDeltaToBuffer(void* ecx, void* edx, void* buf, int f
 		if (v8)
 			ValidateUserCmd(v8, from);
 		else
-			v7 = &v16;
+			v7 = &nullcmd;
 	}
 
 	v9 = GetUserCmd(to);
@@ -52,11 +43,12 @@ bool __fastcall WriteUsercmdDeltaToBuffer(void* ecx, void* edx, void* buf, int f
 	if (v9)
 		ValidateUserCmd(v9, to);
 	else
-		v9 = &v16;
+		v9 = &nullcmd;
 
 	static auto WriteUsercmd = reinterpret_cast<void(__cdecl*)(void* buffer, CUserCmd* from, CUserCmd* to)>(
 		tools::find_pattern("client.dll", "55 8B EC 8B 45 10 83 EC 08"));
+
 	WriteUsercmd(buf, v9, v7);
 
-	return true;
+	return !(*reinterpret_cast<bool*>(reinterpret_cast<std::uintptr_t>(buf) + 0x10));
 }

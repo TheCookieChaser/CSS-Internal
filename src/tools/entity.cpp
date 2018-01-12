@@ -104,7 +104,7 @@ bool Entity::IsVisible(C_CSPlayer* pEntity, int HitboxID)
 	auto end = GetHitboxPosition(pEntity, HitboxID);
 	ray.Init(start,end);
 	g_trace->TraceRay(ray, MASK_SHOT, &filter, &tr);
-	FixTraceRay(end, start, &tr, pEntity);
+	//FixTraceRay(end, start, &tr, pEntity);
 
-	return (tr.m_pEnt == pEntity);
+	return (tr.m_pEnt == pEntity || tr.fraction >= 0.99f);
 }

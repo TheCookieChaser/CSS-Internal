@@ -5,8 +5,8 @@ void __fastcall FrameStageNotify(void* thisptr, void*, ClientFrameStage_t curSta
 {
 	if (curStage == FRAME_RENDER_START)
 	{
-		drawmanager->clear();
-		visuals->render();
+		//drawmanager->clear();
+		//visuals->render();
 	}
 
 	oFrameStageNotify(thisptr, curStage);

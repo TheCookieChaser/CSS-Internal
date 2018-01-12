@@ -128,6 +128,7 @@
     <ClCompile Include="hooks\CreateMove.cpp" />
     <ClCompile Include="hooks\EndScene.cpp" />
     <ClCompile Include="hooks\FrameStageNotify.cpp" />
+    <ClCompile Include="hooks\GetUserCmd.cpp" />
     <ClCompile Include="hooks\hooks.cpp" />
     <ClCompile Include="hooks\Reset.cpp" />
     <ClCompile Include="hooks\WndProc.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="interfaces.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="SDK\characterset.cpp" />
+    <ClCompile Include="sdk\checksum_md5.cpp" />
     <ClCompile Include="SDK\Convar.cpp" />
     <ClCompile Include="SDK\CRC.cpp" />
     <ClCompile Include="SDK\UtlBuffer.cpp" />
@@ -145,6 +147,7 @@
     <ClCompile Include="tools\config.cpp" />
     <ClCompile Include="tools\draw_manager.cpp" />
     <ClCompile Include="tools\entity.cpp" />
+    <ClCompile Include="tools\game.cpp" />
     <ClCompile Include="tools\math.cpp" />
     <ClCompile Include="tools\netvar_manager.cpp" />
     <ClCompile Include="tools\tools.cpp" />
@@ -161,6 +164,7 @@
     <ClInclude Include="SDK\CBaseEntity.h" />
     <ClInclude Include="sdk\CGlobalVars.h" />
     <ClInclude Include="SDK\characterset.h" />
+    <ClInclude Include="sdk\checksum_md5.h" />
     <ClInclude Include="SDK\CInput.h" />
     <ClInclude Include="SDK\Color.h" />
     <ClInclude Include="SDK\Convar.h" />
@@ -190,6 +194,7 @@
     <ClInclude Include="tools\draw_manager.h" />
     <ClInclude Include="tools\entity.h" />
     <ClInclude Include="tools\fnv_hash.h" />
+    <ClInclude Include="tools\game.h" />
     <ClInclude Include="tools\math.h" />
     <ClInclude Include="tools\netvar_manager.h" />
     <ClInclude Include="tools\tools.h" />
