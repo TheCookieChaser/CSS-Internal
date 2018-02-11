@@ -1,4 +1,4 @@
-#include "Tools.h"
+#include "tools.h"
 
 uintptr_t tools::find_pattern(const char* szModule, const char* szSignature)
 {

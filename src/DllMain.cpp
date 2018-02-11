@@ -1,7 +1,6 @@
 #include "hooks/hooks.h"
-#include <iostream>
 
-DWORD WINAPI CheatThread(LPVOID dll)
+DWORD WINAPI thread(LPVOID dll)
 {
 	AllocConsole();
 	freopen("CON", "w", stdout);
@@ -34,7 +33,7 @@ BOOL WINAPI DllMain(
 	{
 		if (hinstDLL)
 			DisableThreadLibraryCalls(hinstDLL);
-		CreateThread(nullptr, 0, CheatThread, hinstDLL, 0, nullptr);
+		CreateThread(nullptr, 0, thread, hinstDLL, 0, nullptr);
 	}
 
 	return TRUE;

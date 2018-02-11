@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdlib>
 
 namespace detail
 {

@@ -1,4 +1,6 @@
-#include "Config.h"
+#include "config.h"
+#include <Windows.h>
+#include <fstream>
 
 config_s config;
 
@@ -10,10 +12,10 @@ BOOL DirectoryExists(LPCTSTR szPath)
 		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-const std::vector<std::string> config_manager::get_configs()
+std::vector<std::string> config_manager::get_configs()
 {
 	if (!DirectoryExists("CSS-Internal"))
-		CreateDirectory("CSS-Internal", NULL);
+		CreateDirectory("CSS-Internal", nullptr);
 
 	std::string config_extension = ".JSON";
 	std::vector<std::string> names;

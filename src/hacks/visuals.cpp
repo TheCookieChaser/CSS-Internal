@@ -104,9 +104,9 @@ void cvisuals::render_players(C_CSPlayer* player)
 ImColor cvisuals::get_player_color(C_CSPlayer* pEntity)
 {
 	if (pEntity->get_team_num() == 2)
-		return Entity::IsVisible(pEntity, 12) ? config.colors_esp_visible_t : config.colors_esp_t;
+		return entity::is_visible(pEntity, 12) ? config.colors_esp_visible_t : config.colors_esp_t;
 	else if (pEntity->get_team_num() == 3)
-		return Entity::IsVisible(pEntity, 12) ? config.colors_esp_visible_ct : config.colors_esp_ct;
+		return entity::is_visible(pEntity, 12) ? config.colors_esp_visible_ct : config.colors_esp_ct;
 
 	return ImColor();
 }

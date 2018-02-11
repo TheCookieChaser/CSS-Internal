@@ -2,13 +2,13 @@
 #include "../tools/config.h"
 
 bool PressedKeys[256]{ false };
-bool bWasInitialized = false;
+bool was_initialized = false;
 WNDPROC pOldWindowProc = nullptr;
 HWND hWindow = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
-LRESULT STDMETHODCALLTYPE WndProc_Hooked(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT STDMETHODCALLTYPE wnd_proc_hooked(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
@@ -60,7 +60,7 @@ LRESULT STDMETHODCALLTYPE WndProc_Hooked(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		}
 	}
 
-	if (bWasInitialized && config.menu_opened && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+	if (was_initialized && config.menu_opened && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 		return true;
 
 	return CallWindowProc(pOldWindowProc, hWnd, uMsg, wParam, lParam);

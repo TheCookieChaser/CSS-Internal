@@ -6,75 +6,10 @@
 #include "../hacks/aimbot.h"
 #include "../hacks/visuals.h"
 #include "../hacks/misc.h"
-#include <vector>
-
-typedef enum
-{
-	Primary_Mode = 0,
-	Secondary_Mode,
-} SDKWeaponMode;
-
-bool can_hit_point(C_CSPlayer* local, C_BaseCombatWeapon* weapon)
-{
-	auto weapon_data = weapon->GetWpnData();
-	if (!weapon_data)
-		return false;
-
-	auto iMode = Primary_Mode; //todo
-	auto  iWeaponID = weapon->GetWeaponID();
-
-	bool	bPrimaryMode = (iMode == Primary_Mode);
-	int		iDamage = weapon_data->Damage;
-	float	flRange = weapon_data->Range;
-	int		iPenetration = weapon_data->Penetration;
-	float	flRangeModifier = weapon_data->RangeModifier;
-	int		iAmmoType = weapon_data->iAmmoType;
-
-	float fCurrentDamage = weapon_data->Damage;   // damage of the bullet at it's current trajectory
-	float flCurrentDistance = 0.0;  //distance that the bullet has traveled so far
-
-	float flPenetrationPower = 0;		// thickness of a wall that this bullet can penetrate
-	float flPenetrationDistance = 0;	// distance at which the bullet is capable of penetrating a wall
-	float flDamageModifier = 0.5;		// default modification of bullets power after they go through a wall.
-	float flPenetrationModifier = 1.f;
-
-	if (!bPrimaryMode)
-	{
-		if (weapon->GetWeaponID() == WEAPON_GLOCK)
-		{
-			iDamage = 18;	// reduced power for burst shots
-			flRangeModifier = 0.9f;
-		}
-		else if (iWeaponID == WEAPON_M4A1)
-		{
-			flRangeModifier = 0.95f; // slower bullets in silenced mode
-		}
-		else if (iWeaponID == WEAPON_USP)
-		{
-			iDamage = 30; // reduced damage in silenced mode
-		}
-	}
-
-	while (fCurrentDamage > 0)
-	{
-		/*Vector vecEnd = vecSrc + vecDir * flDistance;
-
-		trace_t tr; // main enter bullet trace
-
-		UTIL_TraceLineIgnoreTwoEntities(vecSrc, vecEnd, CS_MASK_SHOOT | CONTENTS_HITBOX, this, lastPlayerHit, COLLISION_GROUP_NONE, &tr);
-		{
-			CTraceFilterSkipTwoEntities filter(this, lastPlayerHit, COLLISION_GROUP_NONE);
-
-			// Check for player hitboxes extending outside their collision bounds
-			const float rayExtension = 40.0f;
-			UTIL_ClipTraceToPlayers(vecSrc, vecEnd + vecDir * rayExtension, CS_MASK_SHOOT | CONTENTS_HITBOX, &filter, &tr);
-		}*/
-	}
-}
 
 void bruteforce_triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon* weapon)
 {
-	auto server_time = local->get_tick_base() * g_globalvars->interval_per_tick;
+	const auto server_time = local->get_tick_base() * g_globalvars->interval_per_tick;
 	if (server_time <= weapon->GetNextPrimaryAttack())
 		return;
 
@@ -84,10 +19,10 @@ void bruteforce_triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon*
 
 	weapon->UpdateAccuracyPenalty();
 
-	auto inaccuracy = weapon->GetInaccuracy();
-	auto spread = weapon->GetSpread();
+	const auto inaccuracy = weapon->GetInaccuracy();
+	const auto spread = weapon->GetSpread();
 
-	auto vecStart = local->get_eye_position();
+	auto vec_start = local->get_eye_position();
 
 	auto viewangles = cmd->viewangles;
 	viewangles += local->get_aim_punch() * 2.f;
@@ -96,35 +31,29 @@ void bruteforce_triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon*
 	{
 		game::RandomSeed(i + 1);
 
-		auto rand1 = game::RandomFloat(0.0, M_PI * 2.f);
-		auto rand2 = game::RandomFloat(0.0, inaccuracy);
-		auto v37 = rand2 * cosf(rand1);
-		auto v38 = rand2 * sinf(rand1);
-
-		std::array<float, 16>spreads_x;
-		std::array<float, 16>spreads_y;
+		const auto rand1 = game::RandomFloat(0.0, M_PI * 2.f);
+		const auto rand2 = game::RandomFloat(0.0, inaccuracy);
+		const auto v37 = rand2 * cosf(rand1);
+		const auto v38 = rand2 * sinf(rand1);
 
 		for (auto iBullet = 0; iBullet < weapon_data->Bullets; ++iBullet)
 		{
-			auto rand3 = game::RandomFloat(0.0, M_PI * 2.f);
-			auto rand4 = game::RandomFloat(0.0, spread);
+			const auto rand3 = game::RandomFloat(0.0, M_PI * 2.f);
+			const auto rand4 = game::RandomFloat(0.0, spread);
 
-			spreads_x.at(iBullet) = rand4 * cosf(rand3);
-			spreads_y.at(iBullet) = rand4 * sinf(rand3);
+			const auto spreads_x = rand4 * cosf(rand3) + v37;
+			const auto spreads_y = rand4 * sinf(rand3) + v38;
 
-			spreads_x.at(iBullet) += v37;
-			spreads_y.at(iBullet) += v38;
+			Vector vec_dir_shooting, vec_right, vec_up;
+			math::AngleVectors(viewangles, &vec_dir_shooting, &vec_right, &vec_up);
 
-			Vector vecDirShooting, vecRight, vecUp;
-			math::AngleVectors(viewangles, &vecDirShooting, &vecRight, &vecUp);
+			auto vec_dir = vec_dir_shooting + (vec_right * spreads_x) + (vec_up * spreads_y);
+			vec_dir.NormalizeInPlace();
 
-			auto vecDir = vecDirShooting + (vecRight * spreads_x.at(iBullet)) + (vecUp * spreads_y.at(iBullet));
-			vecDir.NormalizeInPlace();
-
-			auto vecEnd = vecStart + vecDir * weapon_data->Range;
+			auto vec_end = vec_start + vec_dir * weapon_data->Range;
 
 			Ray_t ray;
-			ray.Init(vecStart, vecEnd);
+			ray.Init(vec_start, vec_end);
 
 			CTraceFilter filter;
 			filter.pSkip = local;
@@ -133,7 +62,7 @@ void bruteforce_triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon*
 
 			g_trace->TraceRay(ray, CS_MASK_SHOOT | CONTENTS_HITBOX, &filter, &tr);
 
-			Vector start_screen, end_screen;
+			Vector end_screen;
 			if (!g_debugoverlay->ScreenPosition(tr.endpos, end_screen))
 			{
 				if ((cmd->random_seed & 0xFF) == i)
@@ -145,7 +74,6 @@ void bruteforce_triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon*
 					drawmanager->add_filled_circle({ end_screen.x, end_screen.y }, 2, ImColor(0, 0, 255, 255));
 				}
 			}
-
 
 			if (tr.m_pEnt && reinterpret_cast<C_CSPlayer*>(tr.m_pEnt)->get_team_num() != local->get_team_num() && tr.hitgroup > 0 && tr.hitgroup <= 1)
 			{
@@ -169,7 +97,7 @@ void bruteforce_triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon*
 
 void triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon* weapon)
 {
-	auto server_time = local->get_tick_base() * g_globalvars->interval_per_tick;
+	const auto server_time = local->get_tick_base() * g_globalvars->interval_per_tick;
 	if (server_time <= weapon->GetNextPrimaryAttack())
 		return;
 
@@ -181,40 +109,34 @@ void triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon* weapon)
 
 	game::RandomSeed((cmd->random_seed & 0xFF) + 1);
 
-	auto rand1 = game::RandomFloat(0.0, M_PI * 2.f);
-	auto rand2 = game::RandomFloat(0.0, weapon->GetInaccuracy());
-	auto v37 = rand2 * cosf(rand1);
-	auto v38 = rand2 * sinf(rand1);
+	const auto rand1 = game::RandomFloat(0.0, M_PI * 2.f);
+	const auto rand2 = game::RandomFloat(0.0, weapon->GetInaccuracy());
+	const auto v37 = rand2 * cosf(rand1);
+	const auto v38 = rand2 * sinf(rand1);
 
-	Vector vecStart = local->get_eye_position();
+	auto vec_start = local->get_eye_position();
 
 	auto viewangles = cmd->viewangles;
 	viewangles += local->get_aim_punch() * 2.f;
 
-	std::array<float, 16>spreads_x;
-	std::array<float, 16>spreads_y;
-
-	for (auto iBullet = 0; iBullet < weapon_data->Bullets; ++iBullet)
+	for (auto bullet = 0; bullet < weapon_data->Bullets; bullet++)
 	{
-		auto rand3 = game::RandomFloat(0.0, M_PI * 2.f);
-		auto rand4 = game::RandomFloat(0.0, weapon->GetSpread());
+		const auto rand3 = game::RandomFloat(0.0, M_PI * 2.f);
+		const auto rand4 = game::RandomFloat(0.0, weapon->GetSpread());
 
-		spreads_x.at(iBullet) = rand4 * cosf(rand3);
-		spreads_y.at(iBullet) = rand4 * sinf(rand3);
+		const auto spreads_x = rand4 * cosf(rand3) + v37;
+		const auto spreads_y = rand4 * sinf(rand3) + v38;
 
-		spreads_x.at(iBullet) += v37;
-		spreads_y.at(iBullet) += v38;
+		Vector vec_dir_shooting, vec_right, vec_up;
+		math::AngleVectors(viewangles, &vec_dir_shooting, &vec_right, &vec_up);
 
-		Vector vecDirShooting, vecRight, vecUp;
-		math::AngleVectors(viewangles, &vecDirShooting, &vecRight, &vecUp);
+		auto vec_dir = vec_dir_shooting + (vec_right * spreads_x) + (vec_up * spreads_y);
+		vec_dir.NormalizeInPlace();
 
-		Vector vecDir = vecDirShooting + (vecRight * spreads_x.at(iBullet)) + (vecUp * spreads_y.at(iBullet));
-		vecDir.NormalizeInPlace();
-
-		Vector vecEnd = vecStart + vecDir * weapon_data->Range;
+		auto vec_end = vec_start + vec_dir * weapon_data->Range;
 
 		Ray_t ray;
-		ray.Init(vecStart, vecEnd);
+		ray.Init(vec_start, vec_end);
 
 		CTraceFilter filter;
 		filter.pSkip = local;
@@ -230,20 +152,18 @@ void triggerbot(CUserCmd* cmd, C_CSPlayer* local, C_BaseCombatWeapon* weapon)
 		if (!tr.m_pEnt || tr.hitgroup == 0)
 			continue;
 
-
-
 		cmd->buttons |= IN_ATTACK;
 
-		static auto DrawClientHitboxes = reinterpret_cast<void(__thiscall*)(void*, float, bool)>(tools::find_pattern("client.dll", "55 8B EC 83 EC 60 57"));
+		static auto draw_client_hitboxes = reinterpret_cast<void(__thiscall*)(void*, float, bool)>(tools::find_pattern("client.dll", "55 8B EC 83 EC 60 57"));
 
-		DrawClientHitboxes(tr.m_pEnt, 4.f, false);
+		draw_client_hitboxes(tr.m_pEnt, 4.f, false);
 		g_debugoverlay->AddBoxOverlay(tr.endpos, Vector(-2, -2, -2), Vector(2, 2, 2), Vector(0, 0, 0), 255, 255, 0, 127, 4.f);
 	}
 }
 
 void __stdcall _CreateMove(int sequence_number, float input_sample_frametime, bool active, bool& sendpacket)
 {
-	oCreateMove(sequence_number, input_sample_frametime, active);
+	o_create_move(sequence_number, input_sample_frametime, active);
 
 	auto cmd = &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];
 	auto verified = &g_input->m_pVerifiedCommands[sequence_number % MULTIPLAYER_BACKUP];
@@ -274,7 +194,7 @@ void __stdcall _CreateMove(int sequence_number, float input_sample_frametime, bo
 	verified->m_crc = cmd->GetChecksum();
 }
 
-void __declspec(naked) __stdcall CreateMove(int sequence_number, float input_sample_frametime, bool active)
+void __declspec(naked) __stdcall create_move(int sequence_number, float input_sample_frametime, bool active)
 {
 	__asm
 	{

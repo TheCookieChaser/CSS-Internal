@@ -5,13 +5,66 @@
 class CUserCmd
 {
 public:
+	CUserCmd()
+	{
+		Reset();
+	}
+
 	virtual ~CUserCmd() { };
+
+	void Reset()
+	{
+		command_number = 0;
+		tick_count = 0;
+		viewangles.Init();
+		forwardmove = 0.0f;
+		sidemove = 0.0f;
+		upmove = 0.0f;
+		buttons = 0;
+		impulse = 0;
+		weaponselect = 0;
+		weaponsubtype = 0;
+		random_seed = 0;
+		mousedx = 0;
+		mousedy = 0;
+
+		hasbeenpredicted = false;
+	}
+
+	CUserCmd& operator =(const CUserCmd& src)
+	{
+		if (this == &src)
+			return *this;
+
+		command_number = src.command_number;
+		tick_count = src.tick_count;
+		viewangles = src.viewangles;
+		forwardmove = src.forwardmove;
+		sidemove = src.sidemove;
+		upmove = src.upmove;
+		buttons = src.buttons;
+		impulse = src.impulse;
+		weaponselect = src.weaponselect;
+		weaponsubtype = src.weaponsubtype;
+		random_seed = src.random_seed;
+		mousedx = src.mousedx;
+		mousedy = src.mousedy;
+
+		hasbeenpredicted = src.hasbeenpredicted;
+
+		return *this;
+	}
+
+	CUserCmd(const CUserCmd& src)
+	{
+		*this = src;
+	}
 
 	CRC32_t GetChecksum(void) const
 	{
 		CRC32_t crc;
-		CRC32_Init(&crc);
 
+		CRC32_Init(&crc);
 		CRC32_ProcessBuffer(&crc, &command_number, sizeof(command_number));
 		CRC32_ProcessBuffer(&crc, &tick_count, sizeof(tick_count));
 		CRC32_ProcessBuffer(&crc, &viewangles, sizeof(viewangles));
@@ -25,27 +78,53 @@ public:
 		CRC32_ProcessBuffer(&crc, &random_seed, sizeof(random_seed));
 		CRC32_ProcessBuffer(&crc, &mousedx, sizeof(mousedx));
 		CRC32_ProcessBuffer(&crc, &mousedy, sizeof(mousedy));
-
 		CRC32_Final(&crc);
+
 		return crc;
 	}
 
-	int command_number; //0x0004 
-	int tick_count; //0x0008 
-	Vector viewangles; //0x000C 
-	float forwardmove; //0x0018 
-	float sidemove; //0x001C 
-	float upmove; //0x0020 
-	int buttons; //0x0024 
-	byte impulse; //0x0028 
-	int weaponselect; //0x002C 
-	int weaponsubtype; //0x0030 
-	int random_seed; //0x0034 
-	short mousedx; //0x0038 
-	short mousedy; //0x003C 
-	bool hasbeenpredicted; //0x0040 
+	// Allow command, but negate gameplay-affecting values
+	void MakeInert(void)
+	{
+		viewangles = { 0.f, 0.f, 0.f};
+		forwardmove = 0.f;
+		sidemove = 0.f;
+		upmove = 0.f;
+		buttons = 0;
+		impulse = 0;
+	}
 
-}; //Size=0x0044
+	// For matching server and client commands for debugging
+	int		command_number;
+
+	// the tick the client created this command
+	int		tick_count;
+
+	// Player instantaneous view angles.
+	QAngle	viewangles;
+	// Intended velocities
+	//	forward velocity.
+	float	forwardmove;
+	//  sideways velocity.
+	float	sidemove;
+	//  upward velocity.
+	float	upmove;
+	// Attack button states
+	int		buttons;
+	// Impulse command issued.
+	byte    impulse;
+	// Current weapon id
+	int		weaponselect;
+	int		weaponsubtype;
+
+	int		random_seed;	// For shared random functions
+
+	short	mousedx;		// mouse accum in x from create move
+	short	mousedy;		// mouse accum in y from create move
+
+							// Client only, tracks whether we've predicted this command at least once
+	bool	hasbeenpredicted;
+};
 
 class CVerifiedUserCmd
 {

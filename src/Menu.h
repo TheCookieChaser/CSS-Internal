@@ -1,7 +1,5 @@
 #pragma once
 
-#include <imgui/imgui.h>
-
 class cmenu
 {
 public:
@@ -25,7 +23,7 @@ private:
 	void configs_tab();
 	void players_tab();
 
-	tabs_e m_tab_selected;
+	tabs_e m_tab_selected = tabs_e::Aimbot;
 };
 
 extern cmenu* menu;

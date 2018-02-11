@@ -1,6 +1,9 @@
-#include "menu.h"
+#include "Menu.h"
 #include "tools/entity.h"
 #include "tools/config.h"
+
+#include <imgui/imgui.h>
+#include <array>
 
 cmenu* menu = new cmenu();
 

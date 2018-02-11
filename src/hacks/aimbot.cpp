@@ -17,7 +17,7 @@ void caimbot::move(CUserCmd* pCmd)
 	Vector current_angles;
 	g_engine->GetViewAngles(current_angles);
 
-	auto hitboxpos = Entity::GetHitboxPosition(entity, config.aimbot_hitbox);
+	auto hitboxpos = entity::get_hitbox_position(entity, config.aimbot_hitbox);
 	auto delta = local->get_eye_position() - hitboxpos;
 	Vector angles;
 	math::VectorAngles(delta, angles);
@@ -71,10 +71,10 @@ C_CSPlayer* caimbot::get_best_target()
 			|| entity->get_life_state() == 1
 			|| entity->get_team_num() == local->get_team_num()
 			|| entity == local
-			|| !Entity::IsVisible(entity, 12))
+			|| !entity::is_visible(entity, 12))
 			continue;
 
-		auto delta = local->get_eye_position() - Entity::GetHitboxPosition(entity, config.aimbot_hitbox);
+		auto delta = local->get_eye_position() - entity::get_hitbox_position(entity, config.aimbot_hitbox);
 		Vector angles;
 		math::VectorAngles(delta, angles);
 		math::clamp_angles(angles);

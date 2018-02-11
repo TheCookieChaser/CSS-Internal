@@ -1,4 +1,4 @@
-#include "Hooks.h"
+#include "hooks.h"
 
 #define	MAX_EDICT_BITS 11
 #define WEAPON_SUBTYPE_BITS	6
@@ -14,41 +14,46 @@ void ValidateUserCmd(CUserCmd *usercmd, int sequence_number)
 
 CUserCmd* GetUserCmd(int sequence_number)
 {
-	return  &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];;
+	return &g_input->m_pCommands[sequence_number % MULTIPLAYER_BACKUP];;
 }
 
-bool __fastcall WriteUsercmdDeltaToBuffer(void* ecx, void* edx, void* buf, int from, int to, bool isnewcommand)
+bool __fastcall write_usercmd_delta_to_buffer(void* thisptr, void*, void* buf, int from, int to, bool isnewcommand)
 {
+	static auto WriteUsercmd = reinterpret_cast<void(__cdecl*)(void*, CUserCmd*, CUserCmd*)>(
+		tools::find_pattern("client.dll", "55 8B EC 8B 45 10 83 EC 08"));
+
+	CUserCmd* t, *f;
 	CUserCmd nullcmd;
-	CUserCmd *v7, *v8, *v9, *v33;
 
 	if (from == -1)
 	{
-		v7 = &nullcmd;
+		f = &nullcmd;
 	}
 	else
 	{
-		v8 = GetUserCmd(from);
-		v7 = v8;
-
-		if (v8)
-			ValidateUserCmd(v8, from);
+		f = GetUserCmd(from);
+		if (f)
+		{
+			ValidateUserCmd(f, from);
+		}
 		else
-			v7 = &nullcmd;
+		{
+			// DevMsg( "WARNING! User command delta too old (from %i, to %i)\n", from, to );
+			f = &nullcmd;
+		}
 	}
 
-	v9 = GetUserCmd(to);
-	v33 = v9;
-
-	if (v9)
-		ValidateUserCmd(v9, to);
+	t = GetUserCmd(to);
+	if (t)
+	{
+		ValidateUserCmd(t, to);
+	}
 	else
-		v9 = &nullcmd;
+	{
+		t = &nullcmd;
+	}
 
-	static auto WriteUsercmd = reinterpret_cast<void(__cdecl*)(void* buffer, CUserCmd* from, CUserCmd* to)>(
-		tools::find_pattern("client.dll", "55 8B EC 8B 45 10 83 EC 08"));
+	WriteUsercmd(buf, t, f);
 
-	WriteUsercmd(buf, v9, v7);
-
-	return !(*reinterpret_cast<bool*>(reinterpret_cast<std::uintptr_t>(buf) + 0x10));
+	return *reinterpret_cast<BYTE*>(reinterpret_cast<std::uintptr_t>(buf) + 0x10) == 0;
 }

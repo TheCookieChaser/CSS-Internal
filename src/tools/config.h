@@ -1,10 +1,7 @@
 #pragma once
 
-#include <Windows.h>
-#include <iostream>
-#include <fstream>
 #include <vector>
-#include <json/src/json.hpp>
+#include <json/single_include/nlohmann/json.hpp>
 #include <imgui/imgui.h>
 
 struct config_s
@@ -42,7 +39,7 @@ extern config_s config;
 
 namespace config_manager
 {
-	const std::vector<std::string> get_configs();
+	std::vector<std::string> get_configs();
 	void load_config(std::string configname);
 	void save_config(std::string configname);
 	void remove_config(std::string configname);

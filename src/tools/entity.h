@@ -3,10 +3,10 @@
 #include "../interfaces.h"
 #include "../sdk/CBaseEntity.h"
 
-namespace Entity
+namespace entity
 {
-	Vector GetBonePosition(C_CSPlayer * pEntity, int bone);
-	Vector GetHitboxPosition(C_CSPlayer * pEntity, int HitboxID);
-	void FixTraceRay(Vector end, Vector start, trace_t * oldtrace, C_BasePlayer * ent);
-	bool IsVisible(C_CSPlayer* pEntity, int HitboxID);
+	Vector get_bone_position(C_CSPlayer * pEntity, int bone);
+	Vector get_hitbox_position(C_CSPlayer * pEntity, int HitboxID);
+	void fix_trace_ray(Vector end, Vector start, trace_t * oldtrace, C_BasePlayer * ent);
+	bool is_visible(C_CSPlayer* pEntity, int HitboxID);
 }

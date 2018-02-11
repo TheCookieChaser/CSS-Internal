@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "Math.h"
 
-Vector Entity::GetBonePosition(C_CSPlayer* pEntity, int bone)
+Vector entity::get_bone_position(C_CSPlayer* pEntity, int bone)
 {
 	matrix3x4 boneMatrix[128];
 	if (pEntity->SetupBones(boneMatrix, 128, 0x00000100, 0))
@@ -11,7 +11,7 @@ Vector Entity::GetBonePosition(C_CSPlayer* pEntity, int bone)
 	return Vector(0, 0, 0);
 }
 
-Vector Entity::GetHitboxPosition(C_CSPlayer* pEntity, int HitboxID)
+Vector entity::get_hitbox_position(C_CSPlayer* pEntity, int HitboxID)
 {
 	matrix3x4 matrix[128];
 	if (!pEntity->SetupBones(matrix, 128, 0x00000100, 0))
@@ -42,7 +42,7 @@ Vector Entity::GetHitboxPosition(C_CSPlayer* pEntity, int HitboxID)
 	return vCenter;
 }
 
-void Entity::FixTraceRay(Vector end, Vector start, trace_t* oldtrace, C_BasePlayer* ent)
+void entity::fix_trace_ray(Vector end, Vector start, trace_t* oldtrace, C_BasePlayer* ent)
 {
 	Vector mins, maxs;
 	ent->GetRenderBounds(mins, maxs);
@@ -91,7 +91,7 @@ void Entity::FixTraceRay(Vector end, Vector start, trace_t* oldtrace, C_BasePlay
 	}
 }
 
-bool Entity::IsVisible(C_CSPlayer* pEntity, int HitboxID)
+bool entity::is_visible(C_CSPlayer* pEntity, int HitboxID)
 {
 	auto pLocal = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	trace_t tr;
@@ -101,7 +101,7 @@ bool Entity::IsVisible(C_CSPlayer* pEntity, int HitboxID)
 	filter.pSkip = pLocal;
 
 	auto start = pLocal->get_eye_position();
-	auto end = GetHitboxPosition(pEntity, HitboxID);
+	auto end = get_hitbox_position(pEntity, HitboxID);
 	ray.Init(start,end);
 	g_trace->TraceRay(ray, MASK_SHOT, &filter, &tr);
 	//FixTraceRay(end, start, &tr, pEntity);

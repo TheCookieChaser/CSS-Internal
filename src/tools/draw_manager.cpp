@@ -15,7 +15,7 @@ void cdrawmanager::begin()
 void cdrawmanager::render()
 {
 	auto drawlist = ImGui::GetCurrentWindow()->DrawList;
-	cdrawinfo* drawinfo;
+
 	for (auto drawinfo : m_drawinfos)
 	{
 		if (!drawinfo.render)
@@ -32,7 +32,7 @@ void cdrawmanager::render()
 		if (drawinfo.type == draw_types_e::filled_circle)
 			drawlist->AddCircleFilled(drawinfo.pos, drawinfo.radius, drawinfo.col, drawinfo.num_segments);
 		if (drawinfo.type == draw_types_e::text)
-			drawlist->AddText(drawinfo.pos, drawinfo.col, drawinfo.text_begin, drawinfo.text_end);
+			drawlist->AddText(drawinfo.pos, drawinfo.col, drawinfo.text.c_str());
 	}
 }
 
@@ -120,14 +120,13 @@ void cdrawmanager::add_filled_circle(const ImVec2 & centre, float radius, ImU32 
 	m_drawinfos.push_back(item);
 }
 
-void cdrawmanager::add_text(const ImVec2 & pos, ImU32 col, const char * text_begin, const char * text_end)
+void cdrawmanager::add_text(const ImVec2 & pos, ImU32 col, const char * text)
 {
 	cdrawinfo item;
 	item.type = draw_types_e::text;
 	item.pos = pos;
 	item.col = col;
-	item.text_begin = text_begin;
-	item.text_end = text_end;
+	item.text = text;
 	item.render = true;
 
 	m_drawinfos.push_back(item);

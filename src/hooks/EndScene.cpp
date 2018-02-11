@@ -3,8 +3,11 @@
 #include "../tools/draw_manager.h"
 #include "../menu.h"
 
-void Initialize_GUI(IDirect3DDevice9* vDevice)
+#include <imgui/examples/directx9_example/imgui_impl_dx9.h>
+
+void initialize_gui(IDirect3DDevice9* vDevice)
 {
+	ImGui::CreateContext();
 	ImGui_ImplDX9_Init(hWindow, vDevice);
 
 	auto& style = ImGui::GetStyle();
@@ -61,9 +64,9 @@ void Initialize_GUI(IDirect3DDevice9* vDevice)
 	style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
 }
 
-HRESULT STDMETHODCALLTYPE EndScene_Hooked(IDirect3DDevice9* vDevice)
+HRESULT STDMETHODCALLTYPE end_scene_hooked(IDirect3DDevice9* vDevice)
 {
-	if (bWasInitialized)
+	if (was_initialized)
 	{
 		ImGui::GetIO().MouseDrawCursor = config.menu_opened;
 		ImGui_ImplDX9_NewFrame();
@@ -78,9 +81,9 @@ HRESULT STDMETHODCALLTYPE EndScene_Hooked(IDirect3DDevice9* vDevice)
 	}
 	else
 	{
-		Initialize_GUI(vDevice);
-		bWasInitialized = true;
+		initialize_gui(vDevice);
+		was_initialized = true;
 	}
 
-	return oEndScene(vDevice);
+	return o_end_scene(vDevice);
 }
