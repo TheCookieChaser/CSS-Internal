@@ -2,6 +2,8 @@
 
 cvisuals* visuals = new cvisuals();
 
+
+
 void cvisuals::render()
 {
 	drawmanager->add_text({ 10.f, 10.f }, config.colors_watermark, "CSS-Internal");

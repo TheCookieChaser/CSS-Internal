@@ -35,22 +35,22 @@ public:
 	NETVAR(get_tick_base, "CBasePlayer", "m_nTickBase", std::uint32_t);
 	NETVAR(get_aim_punch, "CBasePlayer", "m_vecPunchAngle", Vector);
 	NETVAR(get_view_offset, "CBasePlayer", "m_vecViewOffset[0]", Vector);
+
+	C_BaseCombatWeapon* GetActiveWeapon()
+	{
+		return get_vfunc<C_BaseCombatWeapon*(__thiscall*)(void*)>(this, 222)(this);
+	}
+
+	Vector get_eye_position()
+	{
+		return get_origin() + get_view_offset();;
+	}
 };
 
 class C_CSPlayer : public C_BasePlayer
 {
 public:
 	NETVAR(get_eye_angles, "CCSPlayer", "m_angEyeAngles[0]", Vector);
-
-	Vector get_eye_position() 
-	{
-		return get_origin() + get_view_offset();;
-	}
-
-	C_BaseCombatWeapon* GetActiveWeapon()
-	{
-		return get_vfunc<C_BaseCombatWeapon*(__thiscall*)(void*)>(this, 222)(this);
-	}
 };
 
 class CCSWeaponInfo

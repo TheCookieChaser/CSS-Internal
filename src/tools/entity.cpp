@@ -108,3 +108,8 @@ bool entity::is_visible(C_CSPlayer* pEntity, int HitboxID)
 
 	return (tr.m_pEnt == pEntity || tr.fraction >= 0.99f);
 }
+
+bool entity::SetupBones(matrix3x4 *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime)
+{
+	
+}

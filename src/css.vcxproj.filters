@@ -287,5 +287,14 @@
     <ClInclude Include="tools\game.h">
       <Filter>Header Files\tools</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\IGameMovement.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\imovehelper.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\iprediction.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

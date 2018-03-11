@@ -24,7 +24,7 @@ void math::AngleVectors(const Vector &angles, Vector& forward)
 void math::AngleVectors(const Vector &angles, Vector *forward, Vector *right, Vector *up)
 {
 	float angle;
-	static float sr, sp, sy, cr, cp, cy, cpi = (M_PI * 2 / 360);
+	static float sr, sp, sy, cr, cp, cy, cpi = (M_PI_F * 2 / 360);
 
 	angle = angles.y * cpi;
 	sy = sin(angle);
@@ -79,8 +79,8 @@ void math::VectorAngles(const Vector& forward, Vector &angles)
 	}
 	else
 	{
-		angles[0] = atan2(-forward[2], forward.Length2D()) * -180 / M_PI;
-		angles[1] = atan2(forward[1], forward[0]) * 180 / M_PI;
+		angles[0] = atan2(-forward[2], forward.Length2D()) * -180 / M_PI_F;
+		angles[1] = atan2(forward[1], forward[0]) * 180 / M_PI_F;
 
 		if (angles[1] > 90)
 			angles[1] -= 180;
