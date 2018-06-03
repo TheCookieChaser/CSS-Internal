@@ -1,5 +1,12 @@
 #include "math.h"
 
+void math::MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out)
+{
+	out[0][column] = in.x;
+	out[1][column] = in.y;
+	out[2][column] = in.z;
+}
+
 void math::SinCos(float a, float* s, float*c)
 {
 	*s = sin(a);
@@ -58,12 +65,31 @@ void math::AngleVectors(const Vector &angles, Vector *forward, Vector *right, Ve
 	}
 }
 
-FORCEINLINE float math::DotProduct(const Vector& a, const Vector& b)
+__forceinline float math::DotProduct(const Vector& a, const Vector& b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
+__forceinline vec_t math::DotProduct(const vec_t *v1, const vec_t *v2)
+{
+	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+
 void math::VectorTransform(const Vector in1, float in2[3][4], Vector &out)
+{
+	out[0] = DotProduct(in1, Vector(in2[0][0], in2[0][1], in2[0][2])) + in2[0][3];
+	out[1] = DotProduct(in1, Vector(in2[1][0], in2[1][1], in2[1][2])) + in2[1][3];
+	out[2] = DotProduct(in1, Vector(in2[2][0], in2[2][1], in2[2][2])) + in2[2][3];
+}
+
+void math::VectorTransform(const float *in1, const matrix3x4_t& in2, float *out)
+{
+	out[0] = DotProduct(in1, in2[0]) + in2[0][3];
+	out[1] = DotProduct(in1, in2[1]) + in2[1][3];
+	out[2] = DotProduct(in1, in2[2]) + in2[2][3];
+}
+
+void math::VectorTransform(const Vector in1, matrix3x4_t in2, Vector &out)
 {
 	out[0] = DotProduct(in1, Vector(in2[0][0], in2[0][1], in2[0][2])) + in2[0][3];
 	out[1] = DotProduct(in1, Vector(in2[1][0], in2[1][1], in2[1][2])) + in2[1][3];
@@ -91,6 +117,42 @@ void math::VectorAngles(const Vector& forward, Vector &angles)
 	}
 
 	angles[2] = 0.0f;
+}
+
+void math::AngleMatrix(const QAngle &angles, matrix3x4_t& matrix)
+{
+	float sr, sp, sy, cr, cp, cy;
+
+	SinCos(DEG2RAD(angles[YAW]), &sy, &cy);
+	SinCos(DEG2RAD(angles[PITCH]), &sp, &cp);
+	SinCos(DEG2RAD(angles[ROLL]), &sr, &cr);
+
+	// matrix = (YAW * PITCH) * ROLL
+	matrix[0][0] = cp * cy;
+	matrix[1][0] = cp * sy;
+	matrix[2][0] = -sp;
+
+	float crcy = cr * cy;
+	float crsy = cr * sy;
+	float srcy = sr * cy;
+	float srsy = sr * sy;
+	matrix[0][1] = sp * srcy - crsy;
+	matrix[1][1] = sp * srsy + crcy;
+	matrix[2][1] = sr * cp;
+
+	matrix[0][2] = (sp*crcy + srsy);
+	matrix[1][2] = (sp*crsy - srcy);
+	matrix[2][2] = cr * cp;
+
+	matrix[0][3] = 0.0f;
+	matrix[1][3] = 0.0f;
+	matrix[2][3] = 0.0f;
+}
+
+void math::AngleMatrix(const QAngle &angles, const Vector &position, matrix3x4_t& matrix)
+{
+	AngleMatrix(angles, matrix);
+	MatrixSetColumn(position, 3, matrix);
 }
 
 void math::correct_movement(Vector vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove)

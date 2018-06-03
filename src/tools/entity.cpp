@@ -3,7 +3,7 @@
 
 Vector entity::get_bone_position(C_CSPlayer* pEntity, int bone)
 {
-	matrix3x4 boneMatrix[128];
+	matrix3x4_t boneMatrix[128];
 	if (pEntity->SetupBones(boneMatrix, 128, 0x00000100, 0))
 	{
 		return Vector(boneMatrix[bone][0][3], boneMatrix[bone][1][3], boneMatrix[bone][2][3]);
@@ -13,7 +13,7 @@ Vector entity::get_bone_position(C_CSPlayer* pEntity, int bone)
 
 Vector entity::get_hitbox_position(C_CSPlayer* pEntity, int HitboxID)
 {
-	matrix3x4 matrix[128];
+	matrix3x4_t matrix[128];
 	if (!pEntity->SetupBones(matrix, 128, 0x00000100, 0))
 		return Vector(0, 0, 0);
 
