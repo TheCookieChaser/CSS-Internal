@@ -13,6 +13,7 @@ IVModelInfo*		g_modelinfo = nullptr;
 IEngineTrace*		g_trace = nullptr;
 IVDebugOverlay*		g_debugoverlay = nullptr;
 ICvar*				g_cvar = nullptr;
+IPhysicsSurfaceProps* g_physprops = nullptr;
 //------------------------------------------//
 // Pattern Scan
 //------------------------------------------//
@@ -32,6 +33,7 @@ void initialize_interfaces()
 	auto client_factory = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(GetModuleHandleA("client.dll"), "CreateInterface"));
 	auto engine_factory = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(GetModuleHandleA("engine.dll"), "CreateInterface"));
 	auto vstdlib_factory = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(GetModuleHandleA("vstdlib.dll"), "CreateInterface"));
+	auto vphysics_factory = reinterpret_cast<CreateInterfaceFn>(GetProcAddress(GetModuleHandleA("vphysics.dll"), "CreateInterface"));
 	//------------------------------------------//
 	// CreateInterface
 	//------------------------------------------//
@@ -44,6 +46,7 @@ void initialize_interfaces()
 	g_trace = reinterpret_cast<IEngineTrace*>(engine_factory("EngineTraceClient003", nullptr));
 	g_debugoverlay = reinterpret_cast<IVDebugOverlay*>(engine_factory("VDebugOverlay003", nullptr));
 	g_cvar = reinterpret_cast<ICvar*>(vstdlib_factory("VEngineCvar004", nullptr));
+	g_physprops = reinterpret_cast<IPhysicsSurfaceProps*>(vphysics_factory("VPhysicsSurfaceProps001", nullptr));
 	//------------------------------------------//
 	// Pattern Scan
 	//------------------------------------------//

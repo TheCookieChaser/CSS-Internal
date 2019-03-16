@@ -255,6 +255,7 @@ float VectorLength(const Vector& v);
 void VectorLerp(const Vector& src1, const Vector& src2, vec_t t, Vector& dest);
 void VectorCrossProduct(const Vector& a, const Vector& b, Vector& result);
 vec_t NormalizeVector(Vector& v);
+float VectorNormalize(Vector& vec);
 FORCEINLINE void VectorMultiply(const Vector& a, vec_t b, Vector& c);
 FORCEINLINE void VectorMultiply(const Vector& a, const Vector& b, Vector& c);
 inline void VectorScale(const Vector& in, vec_t scale, Vector& result);

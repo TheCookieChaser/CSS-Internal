@@ -15,13 +15,12 @@ void math::SinCos(float a, float* s, float*c)
 
 void math::AngleVectors(const Vector &angles, Vector& forward)
 {
-	Assert(s_bMathlibInitialized);
 	Assert(forward);
 
 	float sp, sy, cp, cy;
 
-	math::SinCos(DEG2RAD(angles[YAW]), &sy, &cy);
-	math::SinCos(DEG2RAD(angles[PITCH]), &sp, &cp);
+	SinCos(DEG2RAD(angles[YAW]), &sy, &cy);
+	SinCos(DEG2RAD(angles[PITCH]), &sp, &cp);
 
 	forward.x = cp * cy;
 	forward.y = cp * sy;
@@ -30,18 +29,11 @@ void math::AngleVectors(const Vector &angles, Vector& forward)
 
 void math::AngleVectors(const Vector &angles, Vector *forward, Vector *right, Vector *up)
 {
-	float angle;
-	static float sr, sp, sy, cr, cp, cy, cpi = (M_PI_F * 2 / 360);
+	float sr, sp, sy, cr, cp, cy;
 
-	angle = angles.y * cpi;
-	sy = sin(angle);
-	cy = cos(angle);
-	angle = angles.x * cpi;
-	sp = sin(angle);
-	cp = cos(angle);
-	angle = angles.z * cpi;
-	sr = sin(angle);
-	cr = cos(angle);
+	SinCos(DEG2RAD(angles[YAW]), &sy, &cy);
+	SinCos(DEG2RAD(angles[PITCH]), &sp, &cp);
+	SinCos(DEG2RAD(angles[ROLL]), &sr, &cr);
 
 	if (forward)
 	{

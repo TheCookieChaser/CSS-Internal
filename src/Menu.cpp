@@ -7,6 +7,135 @@
 
 cmenu* menu = new cmenu();
 
+const char* keyNames[] =
+{
+	"",
+	"Mouse 1",
+	"Mouse 2",
+	"Cancel",
+	"Middle Mouse",
+	"Mouse 4",
+	"Mouse 5",
+	"",
+	"Backspace",
+	"Tab",
+	"",
+	"",
+	"Clear",
+	"Enter",
+	"",
+	"",
+	"Shift",
+	"Control",
+	"Alt",
+	"Pause",
+	"Caps",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"Escape",
+	"",
+	"",
+	"",
+	"",
+	"Space",
+	"Page Up",
+	"Page Down",
+	"End",
+	"Home",
+	"Left",
+	"Up",
+	"Right",
+	"Down",
+	"",
+	"",
+	"",
+	"Print",
+	"Insert",
+	"Delete",
+	"",
+	"0",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8",
+	"9",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"A",
+	"B",
+	"C",
+	"D",
+	"E",
+	"F",
+	"G",
+	"H",
+	"I",
+	"J",
+	"K",
+	"L",
+	"M",
+	"N",
+	"O",
+	"P",
+	"Q",
+	"R",
+	"S",
+	"T",
+	"U",
+	"V",
+	"W",
+	"X",
+	"Y",
+	"Z",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"Numpad 0",
+	"Numpad 1",
+	"Numpad 2",
+	"Numpad 3",
+	"Numpad 4",
+	"Numpad 5",
+	"Numpad 6",
+	"Numpad 7",
+	"Numpad 8",
+	"Numpad 9",
+	"Multiply",
+	"Add",
+	"",
+	"Subtract",
+	"Decimal",
+	"Divide",
+	"F1",
+	"F2",
+	"F3",
+	"F4",
+	"F5",
+	"F6",
+	"F7",
+	"F8",
+	"F9",
+	"F10",
+	"F11",
+	"F12",
+
+};
+
 bool color_picker(const char* label, ImColor& col, ImGuiColorEditFlags flags = 0)
 {
 	float color[3];
@@ -97,6 +226,7 @@ void cmenu::aimbot_tab()
 	ImGui::SliderInt("Hitbox", &config.aimbot_hitbox, 0, 18);
 	ImGui::Checkbox("Silent", &config.aimbot_silent);
 	ImGui::Checkbox("Auto Fire", &config.aimbot_autofire);
+	ImGui::Checkbox("No Spread", &config.aimbot_nospread);
 	ImGui::Checkbox("On Key", &config.aimbot_on_key);
 	ImGui::SliderInt("Key", &config.aimbot_key, 0, 256);
 }
@@ -109,11 +239,32 @@ void cmenu::visuals_tab()
 	ImGui::Checkbox("Snap Lines", &config.visuals_snapline);
 	ImGui::Checkbox("Names", &config.visuals_name);
 	ImGui::Checkbox("Weapons", &config.visuals_weapon);
+
+	ImGui::Checkbox("Visualize Triggerbot Seed", &config.visuals_triggerbot_seed);
+	ImGui::Checkbox("Draw Hitboxes On Triggerbot Hit", &config.visuals_triggerbot_hitbox);
+	ImGui::Checkbox("Draw Triggerbot Hit Point", &config.visuals_triggerbot_hit_point);
 }
 
 void cmenu::misc_tab()
 {
+	const char* triggerbot[]{ "Off", "Seed", "Bruteforce Seed" };
+
 	ImGui::Checkbox("Auto Jump", &config.misc_autojump);
+	ImGui::Combo("Triggerbot", &config.misc_triggerbot, triggerbot, ARRAYSIZE(triggerbot));
+	ImGui::Checkbox("Triggerbot On Key", &config.misc_triggerbot_on_key);
+	ImGui::Combo("Triggerbot Key", &config.misc_triggerbot_key, keyNames, ARRAYSIZE(keyNames));
+	ImGui::Text("Filter");
+	ImGui::Separator();
+	ImGui::BeginChild("Filter", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 19 * 6));
+	{
+		ImGui::Selectable(" Head", &config.misc_triggerbot_filter[0]);
+		ImGui::Selectable(" Chest", &config.misc_triggerbot_filter[1]);
+		ImGui::Selectable(" Stomach", &config.misc_triggerbot_filter[2]);
+		ImGui::Selectable(" Arms", &config.misc_triggerbot_filter[3]);
+		ImGui::Selectable(" Legs", &config.misc_triggerbot_filter[4]);
+		ImGui::Selectable(" Friendlies", &config.misc_triggerbot_filter[5]);
+	}
+	ImGui::EndChild();
 }
 
 void cmenu::colors_tab()

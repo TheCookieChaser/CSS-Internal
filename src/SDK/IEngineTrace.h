@@ -14,9 +14,9 @@ struct Ray_t
 	bool	m_IsRay;
 	bool	m_IsSwept;
 
-	void Init(Vector& vecStart, Vector& vecEnd)
+	void Init(Vector const& start, Vector const& end)
 	{
-		m_Delta = vecEnd - vecStart;
+		m_Delta = end - start;
 
 		m_IsSwept = (m_Delta.LengthSqr() != 0);
 
@@ -26,7 +26,7 @@ struct Ray_t
 
 		m_StartOffset.x = m_StartOffset.y = m_StartOffset.z = 0.0f;
 
-		m_Start = vecStart;
+		m_Start = start;
 	}
 };
 
@@ -67,15 +67,6 @@ public:
 
 	// Returns true if there was any kind of impact at all
 	bool DidHit() const;
-
-	// The engine doesn't know what a CBaseEntity is, so it has a backdoor to 
-	// let it get at the edict.
-#if defined( ENGINE_DLL )
-	void SetEdict(edict_t *pEdict);
-	edict_t* GetEdict() const;
-#endif	
-
-
 public:
 
 	float		fractionleftsolid;		// time we left a solid, only valid if we started in solid
@@ -143,6 +134,28 @@ public:
 	}
 
 	void* pSkip;
+};
+
+class CTraceFilterSkipTwoEntities : public ITraceFilter
+{
+public:
+	CTraceFilterSkipTwoEntities(void *pPassEnt1, void *pPassEnt2)
+	{
+		pSkip1 = pPassEnt1;
+		pSkip2 = pPassEnt2;
+	}
+
+	virtual bool ShouldHitEntity(IClientEntity *pEntityHandle, int contentsMask)
+	{
+		return  !(pEntityHandle == pSkip1 || pEntityHandle == pSkip2);
+	}
+	virtual TraceType_t GetTraceType() const
+	{
+		return TRACE_EVERYTHING;
+	}
+
+	void* pSkip1;
+	void* pSkip2;
 };
 
 class IEngineTrace

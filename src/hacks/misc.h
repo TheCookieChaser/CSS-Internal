@@ -6,7 +6,8 @@
 class cmisc
 {
 public:
-	auto move(CUserCmd* pCmd) -> void;
+	void move(CUserCmd* cmd);
+	void autojump(CUserCmd * cmd);
 };
 
 extern cmisc* misc;

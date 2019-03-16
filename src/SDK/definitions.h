@@ -5,6 +5,48 @@
 
 #define	CS_MASK_SHOOT (MASK_SOLID|CONTENTS_DEBRIS)
 
+// ---------------------------
+//  Hit Group standards
+// ---------------------------
+#define	HITGROUP_GENERIC	0
+#define	HITGROUP_HEAD		1
+#define	HITGROUP_CHEST		2
+#define	HITGROUP_STOMACH	3
+#define HITGROUP_LEFTARM	4	
+#define HITGROUP_RIGHTARM	5
+#define HITGROUP_LEFTLEG	6
+#define HITGROUP_RIGHTLEG	7
+#define HITGROUP_GEAR		10			// alerts NPC, but doesn't do damage or bleed (1/100th damage)
+
+// NOTE: If you add a tex type, be sure to modify the s_pImpactEffect
+// array in fx_impact.cpp to get an effect when that surface is shot.
+#define CHAR_TEX_ANTLION		'A'
+#define CHAR_TEX_BLOODYFLESH	'B'
+#define	CHAR_TEX_CONCRETE		'C'
+#define CHAR_TEX_DIRT			'D'
+#define CHAR_TEX_EGGSHELL		'E' ///< the egg sacs in the tunnels in ep2.
+#define CHAR_TEX_FLESH			'F'
+#define CHAR_TEX_GRATE			'G'
+#define CHAR_TEX_ALIENFLESH		'H'
+#define CHAR_TEX_CLIP			'I'
+//#define CHAR_TEX_UNUSED		'J'
+//#define CHAR_TEX_UNUSED		'K'
+#define CHAR_TEX_PLASTIC		'L'
+#define CHAR_TEX_METAL			'M'
+#define CHAR_TEX_SAND			'N'
+#define CHAR_TEX_FOLIAGE		'O'
+#define CHAR_TEX_COMPUTER		'P'
+//#define CHAR_TEX_UNUSED		'Q'
+//#define CHAR_TEX_UNUSED		'R'
+#define CHAR_TEX_SLOSH			'S'
+#define CHAR_TEX_TILE			'T'
+//#define CHAR_TEX_UNUSED		'U'
+#define CHAR_TEX_VENT			'V'
+#define CHAR_TEX_WOOD			'W'
+//#define CHAR_TEX_UNUSED		'X'
+#define CHAR_TEX_GLASS			'Y'
+#define CHAR_TEX_WARPSHIELD		'Z' ///< wierd-looking jello effect for advisor shield.
+
 typedef void* (*CreateInterfaceFn)(const char*, int*);
 typedef float matrix3x4[3][4];
 

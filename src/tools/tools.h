@@ -13,5 +13,6 @@ namespace tools
 #define getByte( x )    (getBits(x[0]) << 4 | getBits(x[1]))
 
 	uintptr_t find_pattern(const char* szModule, const char* szSignature);
+	std::uintptr_t get_rel32(std::uintptr_t address, std::uintptr_t offset, std::uintptr_t instruction_size);
 	bool IsCodePtr(void * ptr);
 }

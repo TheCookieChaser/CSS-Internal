@@ -15,13 +15,13 @@ void cvisuals::render_esp()
 	if (!config.visuals_enabled)
 		return;
 
-	auto local = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
+	auto local = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	if (!local)
 		return;
 	
 	for (auto i = 0; i < g_entitylist->GetHighestEntityIndex(); i++)
 	{
-		auto entity = static_cast<C_BaseEntity*>(g_entitylist->GetClientEntity(i));
+		auto entity = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(i));
 		if (!entity || entity->IsDormant())
 			continue;
 
@@ -31,14 +31,20 @@ void cvisuals::render_esp()
 
 		//if (clientclass->m_ClassID == 35)
 		{
-			render_players(static_cast<C_CSPlayer*>(entity));
+			render_players(entity);
 		}
 	}
 }
 
+const char *WeaponIDToAlias(int id)
+{
+	static auto function = reinterpret_cast<const char*(*)(int)>(tools::get_rel32(tools::find_pattern("client.dll", "E8 ? ? ? ? 50 FF 75 94"), 1, 5));
+	return function(id);
+}
+
 void cvisuals::render_players(C_CSPlayer* player)
 {
-	auto local = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
+	auto local = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	if (player->get_life_state() == 1
 		|| player->get_team_num() == local->get_team_num()
 		|| player == local)
@@ -79,18 +85,22 @@ void cvisuals::render_players(C_CSPlayer* player)
 
 		if (config.visuals_snapline)
 		{
-			drawmanager->add_line({ screen_width / 2, screen_height },
-				{ rect.left + (rect.right - rect.left) / 2, rect.bottom }, ImColor(255, 255, 255, 255));
+			drawmanager->add_line(ImVec2(screen_width / 2.f, screen_height),
+				ImVec2(rect.left + (rect.right - rect.left) / 2.f, rect.bottom), ImColor(255, 255, 255, 255));
 		}
 
 		if (config.visuals_name)
 		{
-			drawmanager->add_text({ top.x, top.y - 16 }, ImColor(255, 255, 255, 255), info.szName);
+			drawmanager->add_text({ rect.left, rect.top - 16 }, ImColor(255, 255, 255, 255), info.szName);
 		}
 
 		if (config.visuals_weapon)
 		{
-			drawmanager->add_text({ top.x, top.y + height }, ImColor(255, 255, 255, 255), weapondata->weaponname);
+			auto weapon_name = WeaponIDToAlias(weapon->GetWeaponID());
+			if (!weapon_name)
+				weapon_name = "unknown";
+
+			drawmanager->add_text({ rect.left, rect.bottom }, ImColor(255, 255, 255, 255), weapon_name);
 		}
 	}
 

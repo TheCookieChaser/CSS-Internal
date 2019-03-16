@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Math.h"
+#include "game.h"
 
 Vector entity::get_bone_position(C_CSPlayer* pEntity, int bone)
 {
@@ -93,7 +94,7 @@ void entity::fix_trace_ray(Vector end, Vector start, trace_t* oldtrace, C_BasePl
 
 bool entity::is_visible(C_CSPlayer* pEntity, int HitboxID)
 {
-	auto pLocal = static_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
+	auto pLocal = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	trace_t tr;
 	Ray_t ray;
 
@@ -103,13 +104,17 @@ bool entity::is_visible(C_CSPlayer* pEntity, int HitboxID)
 	auto start = pLocal->get_eye_position();
 	auto end = get_hitbox_position(pEntity, HitboxID);
 	ray.Init(start,end);
-	g_trace->TraceRay(ray, MASK_SHOT, &filter, &tr);
+	g_trace->TraceRay(ray, 0x4600400B, &filter, &tr);
+
+	// Check for player hitboxes extending outside their collision bounds
+	//game::UTIL_ClipTraceToPlayers(start, end, 0x4600400B, &filter, &tr);
+
 	//FixTraceRay(end, start, &tr, pEntity);
 
-	return (tr.m_pEnt == pEntity || tr.fraction >= 0.99f);
+	return (tr.m_pEnt == pEntity || tr.fraction >= 0.98f);
 }
 
 bool entity::SetupBones(matrix3x4 *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime)
 {
-	
+	return false;
 }

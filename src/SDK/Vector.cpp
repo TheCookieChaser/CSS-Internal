@@ -37,6 +37,20 @@ vec_t NormalizeVector(Vector& v)
 	return l;
 }
 
+float VectorNormalize(Vector& vec)
+{
+	float radius = sqrtf(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+
+	// FLT_EPSILON is added to the radius to eliminate the possibility of divide by zero.
+	float iradius = 1.f / (radius + FLT_EPSILON);
+
+	vec.x *= iradius;
+	vec.y *= iradius;
+	vec.z *= iradius;
+
+	return radius;
+}
+
 FORCEINLINE void VectorMultiply(const Vector& a, vec_t b, Vector& c)
 {
 	CHECK_VALID(a);

@@ -144,6 +144,9 @@
     <ClCompile Include="tools\game.cpp">
       <Filter>Source Files\tools</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\IEngineTrace.cpp">
+      <Filter>sdk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SDK\Color.h">
@@ -294,6 +297,9 @@
       <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\iprediction.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\vphysics_interface.h">
       <Filter>sdk</Filter>
     </ClInclude>
   </ItemGroup>

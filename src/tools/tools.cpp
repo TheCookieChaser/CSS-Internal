@@ -28,6 +28,11 @@ uintptr_t tools::find_pattern(const char* szModule, const char* szSignature)
 	return NULL;
 }
 
+std::uintptr_t tools::get_rel32(std::uintptr_t address, std::uintptr_t offset, std::uintptr_t instruction_size)
+{
+	return address + *reinterpret_cast<std::uintptr_t*>(address + offset) + instruction_size;
+}
+
 bool tools::IsCodePtr(void* ptr)
 {
 	constexpr const DWORD protect_flags = PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY;

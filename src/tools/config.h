@@ -16,6 +16,7 @@ struct config_s
 	int aimbot_hitbox = 0;
 	bool aimbot_silent = false;
 	bool aimbot_autofire = false;
+	bool aimbot_nospread = false;
 	bool aimbot_on_key = false;
 	int aimbot_key = 0;
 
@@ -25,8 +26,15 @@ struct config_s
 	bool visuals_snapline = false;
 	bool visuals_name = false;
 	bool visuals_weapon = false;
+	bool visuals_triggerbot_seed = false;
+	bool visuals_triggerbot_hitbox = false;
+	bool visuals_triggerbot_hit_point = false;
 
 	bool misc_autojump = false;
+	int misc_triggerbot = 0;
+	bool misc_triggerbot_on_key = false;
+	int misc_triggerbot_key = 0;
+	bool misc_triggerbot_filter[6]{ false, false, false, false, false, false };
 
 	ImColor colors_esp_t = ImColor(163, 33, 13, 255);
 	ImColor colors_esp_ct = ImColor(0, 84, 181, 255);

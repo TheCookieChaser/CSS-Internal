@@ -16,6 +16,7 @@ extern IVModelInfo*			g_modelinfo;
 extern IEngineTrace*		g_trace;
 extern IVDebugOverlay*		g_debugoverlay;
 extern ICvar*				g_cvar;
+extern IPhysicsSurfaceProps* g_physprops;
 //------------------------------------------//
 // Pattern Scan
 //------------------------------------------//
