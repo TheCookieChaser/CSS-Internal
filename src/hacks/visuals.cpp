@@ -29,10 +29,8 @@ void cvisuals::render_esp()
 		if (!clientclass)
 			continue;
 
-		//if (clientclass->m_ClassID == 35)
-		{
+		if (clientclass->m_ClassID == CCSPlayer)
 			render_players(entity);
-		}
 	}
 }
 
@@ -68,9 +66,6 @@ void cvisuals::render_players(C_CSPlayer* player)
 	rect_s rect{};
 	if (get_bounding_box(player, rect))
 	{
-		//drawmanager->add_text({ rect.left,rect.top }, ImColor(255, 255, 255, 255), "left, top");
-		//drawmanager->add_text({ rect.right, rect.bottom }, ImColor(255, 255, 255, 255), "right, bottom");
-
 		if (config.visuals_box)
 		{
 			drawmanager->add_rect({ rect.left, rect.top }, { rect.right, rect.bottom }, get_player_color(player));

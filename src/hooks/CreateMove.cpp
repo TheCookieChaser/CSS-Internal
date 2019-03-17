@@ -78,7 +78,7 @@ void __stdcall _CreateMove(int sequence_number, float input_sample_frametime, bo
 		//engine_prediction(local_player, cmd);
 
 		misc->move(cmd);
-		aimbot->move(cmd);
+		aimbot->move(cmd, sendpacket);
 		visuals->render();
 	}
 

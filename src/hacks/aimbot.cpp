@@ -65,169 +65,261 @@ void GetMaterialParameters(int iMaterial, float &flPenetrationModifier, float &f
 	function(iMaterial, flPenetrationModifier, flDamageModifier);
 }
 
-bool TraceToExit(Vector &start, Vector &dir, Vector &end, float flStepSize, float flMaxDistance)
+static bool TraceToExit(Vector &start, Vector &dir, Vector &end, float flStepSize, float flMaxDistance)
 {
-	//float flDistance = 0;
-	//while (flDistance <= flMaxDistance)
-	//{
-	//	flDistance += flStepSize;
+	float flDistance = 0;
+	Vector last = start;
 
-	//	end = start + dir * flDistance;
-
-	//	auto point_contents = g_trace->GetPointContents(end, 0);
-
-	//	if (!(point_contents & MASK_SOLID))
-	//	{
-	//		// found first free point
-	//		return true;
-	//	}
-	//}
-
-	return false;
-}
-
-bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target, Vector origin, Vector destination, float& damage)
-{
-	auto weapon = local_player->GetActiveWeapon();
-	if (!weapon)
-		return 0.f;
-
-	auto weapon_data = weapon->GetWpnData();
-	if (!weapon_data)
-		return 0.f;
-
-	float penetration_power, penetration_distance;
-	GetBulletTypeParameters(weapon_data->iAmmoType, penetration_power, penetration_distance);
-
-	static Vector current_origin, direction, penetration_end;
-	current_origin = origin;
-	direction = destination - origin;
-	const auto length = direction.NormalizeInPlace();
-
-	VectorNormalize(direction);
-
-	auto final_length = 0.f;
-	auto current_penetration = weapon_data->m_iPenetration;
-	auto current_damage = static_cast<float>(weapon_data->m_iDamage);
-
-	CTraceFilter enter_filter, exit_filter;
-	trace_t enter_trace, exit_trace;
-
-	enter_filter.pSkip = local_player;
-
-	while (current_damage > 0.f)
+	while (flDistance <= flMaxDistance)
 	{
-		game::UTIL_TraceLine(current_origin, destination,
-			MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX, &enter_filter, &enter_trace);
-		game::UTIL_ClipTraceToPlayers(current_origin, destination + direction * 40.f,
-			MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX, &enter_filter, &enter_trace);
+		flDistance += flStepSize;
 
-		auto player = reinterpret_cast<C_CSPlayer*>(enter_trace.m_pEnt);
-		if (enter_trace.fraction == 1.f)
-			break;
+		end = start + (dir * flDistance);
 
-		const auto grate = enter_trace.contents & CONTENTS_GRATE;
-		const auto current_length = final_length + (length - final_length) * enter_trace.fraction;
-		const auto raised_damage_modifier = std::pow(
-			weapon_data->m_flRangeModifier,
-			enter_trace.fraction * (current_length * 0.002f)
-		);
-
-		current_damage *= raised_damage_modifier;
-		if (enter_trace.hitgroup != HITGROUP_GEAR && enter_trace.hitgroup != 0 && player && target && enter_trace.m_pEnt == target)
+		if ((g_trace->GetPointContents(end) & MASK_SOLID) == 0)
 		{
-			//const auto scaled_damage = scale_player_damage(
-			//	target,
-			//	current_damage,
-			//	weapon_info.m_ArmorRatio,
-			//	enter_trace.m_Hitgroup,
-			//	mp_friendlyfire,
-			//	player->get_team() == local_team
-			//);
-			//return scaled_damage >= static_cast<float>(min_damage);
-
-			damage = current_damage;
+			// found first free point
 			return true;
 		}
-
-		auto* enter_surface = g_physprops->GetSurfaceData(enter_trace.surface.surfaceProps);
-		if (!enter_surface)
-			break;
-
-		// out of range
-		if (current_length > penetration_distance)
-			break;
-
-		// check if bullet can penetarte another entity
-		if (current_penetration == 0 && !grate)
-			break;
-
-		// If we hit a grate with current_penetration == 0, stop on the next thing we hit
-		if (current_penetration < 0)
-			break;
-
-		const auto enter_material = enter_surface->game.material;
-		auto penetration_power_modifier = 0.f, damage_modifier = 0.f;
-		GetMaterialParameters(enter_material, penetration_power_modifier, damage_modifier);
-
-		// If we're a concrete grate (TOOLS/TOOLSINVISIBLE texture) allow more penetrating power.
-		if (grate)
-		{
-			penetration_power_modifier = 1.0f;
-			damage_modifier = 0.99f;
-		}
-
-		// try to penetrate object, maximum penetration is 128 inch
-		if (!TraceToExit(enter_trace.endpos, direction, penetration_end, 24.f, 128.f))
-			break;
-
-		game::UTIL_TraceLine(
-			penetration_end,
-			enter_trace.endpos,
-			MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX,
-			nullptr,
-			&exit_trace
-		);
-
-		if (exit_trace.m_pEnt && exit_trace.m_pEnt != enter_trace.m_pEnt)
-		{
-			exit_filter.pSkip = exit_trace.m_pEnt;
-			game::UTIL_TraceLine(
-				penetration_end,
-				enter_trace.endpos,
-				MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX,
-				&exit_filter,
-				&exit_trace
-			);
-		}
-
-		const auto penetration_length = (exit_trace.endpos - enter_trace.endpos).NormalizeInPlace();
-		const auto* exit_material = g_physprops->GetSurfaceData(exit_trace.surface.surfaceProps);
-		if (exit_material                                      &&
-			exit_material->game.material == enter_material &&
-			(enter_material == 87 /*CHAR_TEX_WOOD*/ ||
-				enter_material == 77 /*CHAR_TEX_METAL*/)) {
-			penetration_power_modifier += penetration_power_modifier;
-		}
-		if (penetration_length > penetration_power * penetration_power_modifier) {
-			break;
-		}
-
-		// set the last exit trace position as the next enter trace position
-		current_origin = exit_trace.endpos;
-		final_length = current_length + penetration_length;
-
-		penetration_power -= penetration_length / penetration_power_modifier;
-		// calculate the new possible damage for the next penetration
-		current_damage *= damage_modifier;
-
-		--current_penetration;
 	}
 
 	return false;
 }
 
-void caimbot::move(CUserCmd* pCmd)
+bool IsArmored(int hitgroup, int armor_value, bool has_helmet)
+{
+	bool bApplyArmor = false;
+
+	if (armor_value > 0)
+	{
+		switch (hitgroup)
+		{
+		case HITGROUP_GENERIC:
+		case HITGROUP_CHEST:
+		case HITGROUP_STOMACH:
+		case HITGROUP_LEFTARM:
+		case HITGROUP_RIGHTARM:
+			bApplyArmor = true;
+			break;
+		case HITGROUP_HEAD:
+			if (has_helmet)
+			{
+				bApplyArmor = true;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	return bApplyArmor;
+}
+
+float scale_damage(float damage, int hitgroup, int armor_value, bool has_helmet, float weapon_armor_ratio)
+{
+	auto new_dmg = damage;
+	switch (hitgroup)
+	{
+	case HITGROUP_HEAD:
+		new_dmg *= 4.f;
+		break;
+	case HITGROUP_STOMACH:
+		new_dmg *= 1.25f;
+		break;
+	case HITGROUP_LEFTLEG:
+	case HITGROUP_RIGHTLEG:
+		new_dmg *= 0.75f;
+		break;
+	default: 
+		break;
+	}
+
+	auto armor_bonus = 0.5f;
+	auto armor_ratio = weapon_armor_ratio * 0.5f;
+	if (armor_value && IsArmored(hitgroup, armor_value, has_helmet))
+	{
+		auto flNew = new_dmg * armor_ratio;
+		auto flArmor = (new_dmg - flNew) * armor_bonus;
+
+		if (flArmor > armor_value)
+		{
+			flArmor = armor_value;
+			flArmor *= (1 / armor_bonus);
+			flNew = new_dmg - flArmor;
+		}
+
+		new_dmg = flNew;
+	}
+
+	return new_dmg;
+}
+
+bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player, Vector shootAngles, float& damage)
+{
+	auto weapon = local_player->GetActiveWeapon();
+	if (!weapon)
+		return false;
+
+	auto weapon_data = weapon->GetWpnData();
+	if (!weapon_data)
+		return false;
+
+	//TODO: figure this out
+	auto bPrimaryMode = /*(iMode == Primary_Mode)*/true;
+	auto iWeaponID = weapon->GetWeaponID();
+	auto iDamage = weapon_data->m_iDamage;
+	auto iBulletType = weapon_data->iAmmoType;
+	auto flDistance = weapon_data->m_flRange;
+	auto flRangeModifier = weapon_data->m_flRangeModifier;
+	auto iPenetration = weapon_data->m_iPenetration;
+
+	if (!bPrimaryMode)
+	{
+		if (iWeaponID == WEAPON_GLOCK)
+		{
+			iDamage = 18;	// reduced power for burst shots
+			flRangeModifier = 0.9f;
+		}
+		else if (iWeaponID == WEAPON_M4A1)
+			flRangeModifier = 0.95f; // slower bullets in silenced mode
+		else if (iWeaponID == WEAPON_USP)
+			iDamage = 30; // reduced damage in silenced mode
+	}
+
+	float fCurrentDamage = iDamage;   // damage of the bullet at it's current trajectory
+	float flCurrentDistance = 0.0;  //distance that the bullet has traveled so far
+
+	Vector vecDir, vecRight, vecUp;
+	math::AngleVectors(shootAngles, &vecDir, &vecRight, &vecUp);
+
+	float flPenetrationPower = 0;		// thickness of a wall that this bullet can penetrate
+	float flPenetrationDistance = 0;	// distance at which the bullet is capable of penetrating a wall
+	float flDamageModifier = 0.5;		// default modification of bullets power after they go through a wall.
+	float flPenetrationModifier = 1.f;
+
+	GetBulletTypeParameters(iBulletType, flPenetrationPower, flPenetrationDistance);
+
+	auto vecSrc = local_player->get_eye_position();
+
+	while (fCurrentDamage > 0)
+	{
+		Vector vecEnd = vecSrc + vecDir * flDistance;
+
+		trace_t tr;
+
+		game::UTIL_TraceLine(vecSrc, vecEnd, CS_MASK_SHOOT | CONTENTS_HITBOX, local_player, 0, &tr);
+		{
+			CTraceFilter filter;
+			filter.pSkip = local_player;
+			game::UTIL_ClipTraceToPlayers(vecSrc, vecEnd + vecDir * 40.0f, CS_MASK_SHOOT | CONTENTS_HITBOX, &filter, &tr);
+		}
+
+		if (tr.fraction == 1.0f)
+			break;
+
+		/************* MATERIAL DETECTION ***********/
+		surfacedata_t *pSurfaceData = g_physprops->GetSurfaceData(tr.surface.surfaceProps);
+		int iEnterMaterial = pSurfaceData->game.material;
+
+		GetMaterialParameters(iEnterMaterial, flPenetrationModifier, flDamageModifier);
+
+		bool hitGrate = tr.contents & CONTENTS_GRATE;
+
+		// since some railings in de_inferno are CONTENTS_GRATE but CHAR_TEX_CONCRETE, we'll trust the
+		// CONTENTS_GRATE and use a high damage modifier.
+		if (hitGrate)
+		{
+			// If we're a concrete grate (TOOLS/TOOLSINVISIBLE texture) allow more penetrating power.
+			flPenetrationModifier = 1.0f;
+			flDamageModifier = 0.99f;
+		}
+
+		//calculate the damage based on the distance the bullet travelled.
+		flCurrentDistance += tr.fraction * flDistance;
+		fCurrentDamage *= pow(flRangeModifier, (flCurrentDistance / 500));
+
+		auto player = reinterpret_cast<C_CSPlayer*>(tr.m_pEnt);
+		if (player == target_player && tr.hitgroup != HITGROUP_GENERIC && tr.hitgroup != HITGROUP_GEAR)
+		{
+			damage = scale_damage(fCurrentDamage, tr.hitgroup, player->get_armor_value(), player->get_has_helmet(), weapon_data->m_flArmorRatio);
+			//printf("damage: %f\n", damage);
+			return true;
+		}
+
+		// check if we reach penetration distance, no more penetrations after that
+		if (flCurrentDistance > flPenetrationDistance && iPenetration > 0)
+			iPenetration = 0;
+
+		// check if bullet can penetarte another entity
+		if (iPenetration == 0 && !hitGrate)
+			break; // no, stop
+
+		// If we hit a grate with iPenetration == 0, stop on the next thing we hit
+		if (iPenetration < 0)
+			break;
+
+		Vector penetrationEnd;
+
+		// try to penetrate object, maximum penetration is 128 inch
+		if (!TraceToExit(tr.endpos, vecDir, penetrationEnd, 24, 128))
+			break;
+
+		// find exact penetration exit
+		trace_t exitTr;
+		game::UTIL_TraceLine(penetrationEnd, tr.endpos, CS_MASK_SHOOT | CONTENTS_HITBOX, NULL, &exitTr);
+
+		if (exitTr.m_pEnt != tr.m_pEnt && exitTr.m_pEnt != NULL)
+		{
+			// something was blocking, trace again
+			game::UTIL_TraceLine(penetrationEnd, tr.endpos, CS_MASK_SHOOT | CONTENTS_HITBOX, exitTr.m_pEnt, 0, &exitTr);
+		}
+
+		// get material at exit point
+		pSurfaceData = g_physprops->GetSurfaceData(exitTr.surface.surfaceProps);
+		int iExitMaterial = pSurfaceData->game.material;
+
+		hitGrate = hitGrate && (exitTr.contents & CONTENTS_GRATE);
+
+		// if enter & exit point is wood or metal we assume this is 
+		// a hollow crate or barrel and give a penetration bonus
+		if (iEnterMaterial == iExitMaterial)
+		{
+			if (iExitMaterial == CHAR_TEX_WOOD ||
+				iExitMaterial == CHAR_TEX_METAL)
+			{
+				flPenetrationModifier *= 2;
+			}
+		}
+
+		float flTraceDistance = VectorLength(exitTr.endpos - tr.endpos);
+
+		// check if bullet has enough power to penetrate this distance for this material
+		if (flTraceDistance > (flPenetrationPower * flPenetrationModifier))
+			break; // bullet hasn't enough power to penetrate this distance
+
+		// penetration was successful
+
+		//setup new start end parameters for successive trace
+
+		flPenetrationPower -= flTraceDistance / flPenetrationModifier;
+		flCurrentDistance += flTraceDistance;
+
+		// NDebugOverlay::Box( exitTr.endpos, Vector(-2,-2,-2), Vector(2,2,2), 0,255,0,127, 8 );
+
+		vecSrc = exitTr.endpos;
+		flDistance = (flDistance - flCurrentDistance) * 0.5;
+
+		// reduce damage power each time we hit something other than a grate
+		fCurrentDamage *= flDamageModifier;
+
+		// reduce penetration counter
+		iPenetration--;
+	}
+
+	return false;
+}
+
+void caimbot::move(CUserCmd* pCmd, bool& sendpacket)
 {
 	if (!config.aimbot_enabled)
 		return;
@@ -284,6 +376,8 @@ void caimbot::move(CUserCmd* pCmd)
 		pCmd->viewangles = angles;
 		if (!config.aimbot_silent)
 			g_engine->SetViewAngles(angles);
+		else
+			sendpacket = false;
 
 		if (config.aimbot_autofire)
 			pCmd->buttons |= IN_ATTACK;
@@ -313,14 +407,14 @@ C_CSPlayer* caimbot::get_best_target()
 			|| entity == local)
 			continue;
 
-		float damage = 0.f;
-		if (!can_penetrate_point(local, entity, local->get_eye_position(), entity::get_hitbox_position(entity, config.aimbot_hitbox), damage))
-			continue;
-
 		auto delta = local->get_eye_position() - entity::get_hitbox_position(entity, config.aimbot_hitbox);
 		Vector angles;
 		math::VectorAngles(delta, angles);
 		math::clamp_angles(angles);
+
+		float damage = 0.f;
+		if (!can_penetrate_point(local, entity, angles, damage))
+			continue;
 
 		delta = angles - current_angles;
 		delta.y = std::remainderf(delta.y, 360.f);

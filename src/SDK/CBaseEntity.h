@@ -69,6 +69,8 @@ class C_CSPlayer : public C_BasePlayer
 {
 public:
 	NETVAR(get_eye_angles, "CCSPlayer", "m_angEyeAngles[0]", Vector);
+	NETVAR(get_armor_value, "CCSPlayer", "m_ArmorValue", int);
+	NETVAR(get_has_helmet, "CCSPlayer", "m_bHasHelmet", bool);
 };
 
 #define MAX_WEAPON_STRING	80

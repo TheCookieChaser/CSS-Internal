@@ -161,10 +161,10 @@ public:
 class IEngineTrace
 {
 public:
-	int	GetPointContents(const Vector &vecAbsPosition, int contentsMask = MASK_ALL, IClientEntity** ppEntity = NULL)
+	int	GetPointContents(const Vector &vecAbsPosition, IHandleEntity** ppEntity = NULL)
 	{
-		typedef int(__thiscall* fnGetPointContents)(void*, const Vector&, int, IClientEntity**);
-		return get_vfunc<fnGetPointContents>(this, 0)(this, vecAbsPosition, contentsMask, ppEntity);
+		typedef int(__thiscall* fnGetPointContents)(void*, const Vector &, IHandleEntity** );
+		return get_vfunc<fnGetPointContents>(this, 0)(this, vecAbsPosition, ppEntity);
 	}
 
 	void ClipRayToEntity(const Ray_t &ray, unsigned int fMask, IHandleEntity *pEnt, trace_t *pTrace)

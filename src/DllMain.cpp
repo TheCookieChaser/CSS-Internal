@@ -1,4 +1,8 @@
 #include "hooks/hooks.h"
+#include <fstream>
+#include <array>
+
+#define DUMP_CLASS_IDS
 
 DWORD WINAPI thread(LPVOID dll)
 {
@@ -10,6 +14,21 @@ DWORD WINAPI thread(LPVOID dll)
 	initialize_hooks();
 
 	g_cvar->ConsoleColorPrintf(Color(150, 255, 150), "Sucessfully Injected!\n");
+
+#ifdef DUMP_CLASS_IDS
+	std::ofstream file("class_ids.txt");
+	file << "enum class EClassIds : int" << std::endl;
+	file << "{" << std::endl;
+	auto clazz = g_client->GetAllClasses();
+	while (clazz)
+	{
+		file << "\t" << clazz->m_pNetworkName << " = " << clazz->m_ClassID << "," << std::endl;
+		clazz = clazz->m_pNext;
+	}
+
+	file << "};" << std::endl;
+	file.close();
+#endif
 
 	while (!(GetAsyncKeyState(VK_END) & 0x8000))
 	{

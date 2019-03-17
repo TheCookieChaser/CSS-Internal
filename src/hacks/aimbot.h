@@ -8,7 +8,7 @@
 class caimbot
 {
 public:
-	void move(CUserCmd* pCmd);
+	void move(CUserCmd * pCmd, bool & sendpacket);
 	C_CSPlayer* get_best_target();
 };
 
