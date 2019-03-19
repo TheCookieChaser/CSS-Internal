@@ -1,5 +1,4 @@
 #include "aimbot.h"
-#include "../tools/draw_manager.h"
 #include "../tools/game.h"
 
 caimbot* aimbot = new caimbot();
@@ -13,7 +12,7 @@ void apply_nospread_angles(CUserCmd* cmd, C_BasePlayer* local_player, Vector& vi
 	if (!weapon)
 		return;
 
-	//const auto server_time = local_player->get_tick_base() * g_globalvars->interval_per_tick;
+	//const auto server_time = local_player->get_tick_base() * g_globals->interval_per_tick;
 	//if (server_time <= weapon->get_next_primary_attack() || server_time <= local_player->get_next_attack())
 	//	return;
 
@@ -58,11 +57,45 @@ void GetBulletTypeParameters(int iBulletType, float &fPenetrationPower, float &f
 	function(iBulletType, fPenetrationPower, flPenetrationDistance);
 }
 
+//Yes i love copy pasting from ida (55 8B EC 8B 45 08 83 C0 BD)
 void GetMaterialParameters(int iMaterial, float &flPenetrationModifier, float &flDamageModifier)
 {
-	static auto function = reinterpret_cast<void(*)(int, float&, float&)>(
-		tools::find_pattern("client.dll", "55 8B EC 8B 45 08 83 C0 BD"));
-	function(iMaterial, flPenetrationModifier, flDamageModifier);
+	switch (iMaterial)
+	{
+	case 67:
+		flPenetrationModifier = 0.40000001;
+		flDamageModifier = 0.25;
+		break;
+	case 68:
+	case 77:
+		flPenetrationModifier = 0.5;
+		flDamageModifier = 0.30000001;
+		break;
+	case 71:
+		flPenetrationModifier = 1.0;
+		flDamageModifier = 0.99000001;
+		break;
+	case 80:
+		flPenetrationModifier = 0.40000001;
+		flDamageModifier = 0.44999999;
+		break;
+	case 84:
+		flPenetrationModifier = 0.64999998;
+		flDamageModifier = 0.30000001;
+		break;
+	case 86:
+		flPenetrationModifier = 0.5;
+		flDamageModifier = 0.44999999;
+		break;
+	case 87:
+		flPenetrationModifier = 1.0;
+		flDamageModifier = 0.60000002;
+		break;
+	default:
+		flPenetrationModifier = 1.0;
+		flDamageModifier = 0.5;
+		break;
+	}
 }
 
 static bool TraceToExit(Vector &start, Vector &dir, Vector &end, float flStepSize, float flMaxDistance)
@@ -154,7 +187,7 @@ float scale_damage(float damage, int hitgroup, int armor_value, bool has_helmet,
 	return new_dmg;
 }
 
-bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player, Vector shootAngles, float& damage)
+bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player, Vector shootAngles)
 {
 	auto weapon = local_player->GetActiveWeapon();
 	if (!weapon)
@@ -164,8 +197,6 @@ bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player
 	if (!weapon_data)
 		return false;
 
-	//TODO: figure this out
-	auto bPrimaryMode = /*(iMode == Primary_Mode)*/true;
 	auto iWeaponID = weapon->GetWeaponID();
 	auto iDamage = weapon_data->m_iDamage;
 	auto iBulletType = weapon_data->iAmmoType;
@@ -173,7 +204,7 @@ bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player
 	auto flRangeModifier = weapon_data->m_flRangeModifier;
 	auto iPenetration = weapon_data->m_iPenetration;
 
-	if (!bPrimaryMode)
+	if (weapon->get_weapon_mode() == Secondary_Mode)
 	{
 		if (iWeaponID == WEAPON_GLOCK)
 		{
@@ -241,9 +272,8 @@ bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player
 		auto player = reinterpret_cast<C_CSPlayer*>(tr.m_pEnt);
 		if (player == target_player && tr.hitgroup != HITGROUP_GENERIC && tr.hitgroup != HITGROUP_GEAR)
 		{
-			damage = scale_damage(fCurrentDamage, tr.hitgroup, player->get_armor_value(), player->get_has_helmet(), weapon_data->m_flArmorRatio);
-			//printf("damage: %f\n", damage);
-			return true;
+			return scale_damage(fCurrentDamage, tr.hitgroup, player->get_armor_value(),
+				player->get_has_helmet(), weapon_data->m_flArmorRatio) > config.aimbot_mindmg;
 		}
 
 		// check if we reach penetration distance, no more penetrations after that
@@ -304,8 +334,6 @@ bool can_penetrate_point(C_BasePlayer* local_player, C_BasePlayer* target_player
 		flPenetrationPower -= flTraceDistance / flPenetrationModifier;
 		flCurrentDistance += flTraceDistance;
 
-		// NDebugOverlay::Box( exitTr.endpos, Vector(-2,-2,-2), Vector(2,2,2), 0,255,0,127, 8 );
-
 		vecSrc = exitTr.endpos;
 		flDistance = (flDistance - flCurrentDistance) * 0.5;
 
@@ -332,10 +360,16 @@ void caimbot::move(CUserCmd* pCmd, bool& sendpacket)
 	if (!weapon)
 		return;
 
-	const auto server_time = local_player->get_tick_base() * g_globalvars->interval_per_tick;
-	if (server_time <= weapon->get_next_primary_attack() || server_time <= local_player->get_next_attack())
+	if (weapon->get_clip() <= 0)
 		return;
 
+	if (!config.aimbot_smooth)
+	{
+		const auto server_time = local_player->get_tick_base() * g_globals->interval_per_tick;
+		if (server_time <= weapon->get_next_primary_attack() || server_time <= local_player->get_next_attack())
+			return;
+	}
+	
 	auto weapon_data = weapon->GetWpnData();
 	if (!weapon_data)
 		return;
@@ -365,9 +399,9 @@ void caimbot::move(CUserCmd* pCmd, bool& sendpacket)
 
 	math::clamp_angles(angles);
 
-	Vector oldangles = pCmd->viewangles;
-	float oldside = pCmd->sidemove;
-	float oldforward = pCmd->forwardmove;
+	const auto old_angles = pCmd->viewangles;
+	const auto old_side_move = pCmd->sidemove;
+	const auto old_forward_move = pCmd->forwardmove;
 
 	if (!config.aimbot_on_key || (config.aimbot_on_key && PressedKeys[config.aimbot_key]))
 	{
@@ -376,14 +410,14 @@ void caimbot::move(CUserCmd* pCmd, bool& sendpacket)
 		pCmd->viewangles = angles;
 		if (!config.aimbot_silent)
 			g_engine->SetViewAngles(angles);
-		else
+		else if (config.aimbot_psilent)
 			sendpacket = false;
 
 		if (config.aimbot_autofire)
 			pCmd->buttons |= IN_ATTACK;
 	}
 
-	math::correct_movement(oldangles, pCmd, oldforward, oldside);
+	math::correct_movement(old_angles, pCmd, old_forward_move, old_side_move);
 }
 
 C_CSPlayer* caimbot::get_best_target()
@@ -407,13 +441,19 @@ C_CSPlayer* caimbot::get_best_target()
 			|| entity == local)
 			continue;
 
+		auto clientclass = entity->GetClientClass();
+		if (!clientclass)
+			continue;
+
+		if (clientclass->m_ClassID != CCSPlayer)
+			continue;
+
 		auto delta = local->get_eye_position() - entity::get_hitbox_position(entity, config.aimbot_hitbox);
 		Vector angles;
 		math::VectorAngles(delta, angles);
 		math::clamp_angles(angles);
 
-		float damage = 0.f;
-		if (!can_penetrate_point(local, entity, angles, damage))
+		if (!can_penetrate_point(local, entity, angles))
 			continue;
 
 		delta = angles - current_angles;

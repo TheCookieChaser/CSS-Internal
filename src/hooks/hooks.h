@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 #include "../tools/vmt_hook.h"
-#include "../Interfaces.h"
+#include "../interfaces.h"
 
 #include <d3d9.h>
 
@@ -20,12 +20,14 @@ typedef HRESULT(STDMETHODCALLTYPE* EndScene_fn)(IDirect3DDevice9*);
 typedef void(__stdcall* CreateMove_fn)(int, float, bool);
 typedef void(__thiscall* FrameStageNotify_fn)(void*, ClientFrameStage_t);
 typedef CUserCmd*(__thiscall* GetUserCmd_fn)(void*, int sequence_number);
+typedef void(__thiscall* Paint_fn)(void*, PaintMode_t);
 
 extern Reset_fn				o_reset;
 extern EndScene_fn			o_end_scene;
 extern CreateMove_fn		o_create_move;
 extern FrameStageNotify_fn	o_frame_stage_notify;
 extern GetUserCmd_fn		o_get_user_cmd;
+extern Paint_fn				o_paint;
 
 HRESULT STDMETHODCALLTYPE	reset_hooked(IDirect3DDevice9* vDevice, D3DPRESENT_PARAMETERS* Params);
 HRESULT STDMETHODCALLTYPE	end_scene_hooked(IDirect3DDevice9* vDevice);
@@ -34,6 +36,7 @@ void __stdcall				create_move(int sequence_number, float input_sample_frametime,
 bool __fastcall				write_usercmd_delta_to_buffer(void* ecx, void* edx, void* buf, int from, int to, bool isnewcommand);
 void __fastcall				frame_stage_notify(void* thisptr, void*, ClientFrameStage_t curStage);
 CUserCmd* __fastcall		get_user_cmd(void* thisptr, void*, int sequence_number);
+void __fastcall				paint(void* thisptr, void*, PaintMode_t mode);
 
 extern bool PressedKeys[256];
 extern bool was_initialized;

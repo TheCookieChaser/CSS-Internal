@@ -1,6 +1,5 @@
 #include "hooks.h"
 #include "../tools/config.h"
-#include "../tools/draw_manager.h"
 #include "../menu.h"
 
 #include <imgui/examples/directx9_example/imgui_impl_dx9.h>
@@ -72,10 +71,6 @@ HRESULT STDMETHODCALLTYPE end_scene_hooked(IDirect3DDevice9* vDevice)
 		ImGui_ImplDX9_NewFrame();
 
 		menu->render();
-
-		drawmanager->begin();
-		drawmanager->render();
-		drawmanager->end();
 
 		ImGui::Render();
 	}

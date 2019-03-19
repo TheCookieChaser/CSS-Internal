@@ -138,16 +138,28 @@ const char* keyNames[] =
 
 bool color_picker(const char* label, ImColor& col, ImGuiColorEditFlags flags = 0)
 {
-	float color[3];
-	color[0] = col.Value.x;
-	color[1] = col.Value.y;
-	color[2] = col.Value.z;
+	float color[3]{ col.Value.x, col.Value.y, col.Value.z };
+
 	if (!ImGui::ColorPicker3(label, color, flags))
 		return false;
 
 	col.Value.x = color[0];
 	col.Value.y = color[1];
 	col.Value.z = color[2];
+
+	return true;
+}
+
+bool color_picker(const char* label, Color& col, ImGuiColorEditFlags flags = 0)
+{
+	float color[3]{ col.r() / 255.f, col.b() / 255.f, col.b() / 255.f };
+
+	if (!ImGui::ColorPicker3(label, color, flags))
+		return false;
+
+	col.SetR(color[0] * 255.f);
+	col.SetG(color[1] * 255.f);
+	col.SetB(color[2] * 255.f);
 
 	return true;
 }
@@ -225,8 +237,10 @@ void cmenu::aimbot_tab()
 	ImGui::SliderFloat("Smooth", &config.aimbot_smooth, 0.f, 50.f);
 	ImGui::SliderInt("Hitbox", &config.aimbot_hitbox, 0, 18);
 	ImGui::Checkbox("Silent", &config.aimbot_silent);
+	ImGui::Checkbox("Perfect Silent", &config.aimbot_psilent);
 	ImGui::Checkbox("Auto Fire", &config.aimbot_autofire);
 	ImGui::Checkbox("No Spread", &config.aimbot_nospread);
+	ImGui::SliderFloat("Minimum Damage", &config.aimbot_mindmg, 0.f, 120.f);
 	ImGui::Checkbox("On Key", &config.aimbot_on_key);
 	ImGui::SliderInt("Key", &config.aimbot_key, 0, 256);
 }
@@ -240,9 +254,12 @@ void cmenu::visuals_tab()
 	ImGui::Checkbox("Names", &config.visuals_name);
 	ImGui::Checkbox("Weapons", &config.visuals_weapon);
 
-	ImGui::Checkbox("Visualize Triggerbot Seed", &config.visuals_triggerbot_seed);
 	ImGui::Checkbox("Draw Hitboxes On Triggerbot Hit", &config.visuals_triggerbot_hitbox);
 	ImGui::Checkbox("Draw Triggerbot Hit Point", &config.visuals_triggerbot_hit_point);
+
+	ImGui::Checkbox("Spread Circle", &config.visuals_spread_circle);
+
+	ImGui::Checkbox("No Flash", &config.visuals_no_flash);
 }
 
 void cmenu::misc_tab()

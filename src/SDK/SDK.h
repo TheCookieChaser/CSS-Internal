@@ -34,3 +34,4 @@
 #include "IGameMovement.h"
 #include "iprediction.h"
 #include "vphysics_interface.h"
+#include "ISurface.h"

@@ -3,18 +3,42 @@
 
 cvisuals* visuals = new cvisuals();
 
+void render_text(int x, int y, Color color, HFont font, const wchar_t * text)
+{
+	g_surface->DrawSetTextPos(x, y);
+	g_surface->DrawSetTextFont(font);
+	g_surface->DrawSetTextColor(color);
+	g_surface->DrawPrintText(text, wcslen(text));
+}
+
+const char* WeaponIDToAlias(int id)
+{
+	static auto function = reinterpret_cast<const char*(*)(int)>(
+		tools::get_rel32(tools::find_pattern("client.dll", "E8 ? ? ? ? 50 FF 75 94"), 1, 5));
+	return function(id);
+}
+
+void cvisuals::initialize()
+{
+	courier_new = g_surface->CreateFont();
+	g_surface->SetFontGlyphSet(courier_new, "Courier New", 14, 0, 0, 0, ISurface::FONTFLAG_OUTLINE);
+
+	initialized = true;
+}
+
 void cvisuals::render()
 {
-	drawmanager->add_text({ 10.f, 10.f }, config.colors_watermark, "CSS-Internal");
+	render_text(10, 10, config.colors_watermark, courier_new, L"CSS-Internal");
+
+	if (!config.visuals_enabled)
+		return;
 
 	render_esp();
+	render_spread_circle();
 }
 
 void cvisuals::render_esp()
 {
-	if (!config.visuals_enabled)
-		return;
-
 	auto local = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	if (!local)
 		return;
@@ -25,22 +49,16 @@ void cvisuals::render_esp()
 		if (!entity || entity->IsDormant())
 			continue;
 
-		auto clientclass = entity->GetClientClass();
-		if (!clientclass)
+		auto client_class = entity->GetClientClass();
+		if (!client_class)
 			continue;
 
-		if (clientclass->m_ClassID == CCSPlayer)
-			render_players(entity);
+		if (client_class->m_ClassID == CCSPlayer)
+			render_player(entity);
 	}
 }
 
-const char *WeaponIDToAlias(int id)
-{
-	static auto function = reinterpret_cast<const char*(*)(int)>(tools::get_rel32(tools::find_pattern("client.dll", "E8 ? ? ? ? 50 FF 75 94"), 1, 5));
-	return function(id);
-}
-
-void cvisuals::render_players(C_CSPlayer* player)
+void cvisuals::render_player(C_CSPlayer* player)
 {
 	auto local = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
 	if (player->get_life_state() == 1
@@ -68,25 +86,33 @@ void cvisuals::render_players(C_CSPlayer* player)
 	{
 		if (config.visuals_box)
 		{
-			drawmanager->add_rect({ rect.left, rect.top }, { rect.right, rect.bottom }, get_player_color(player));
+			g_surface->DrawSetColor(get_player_color(player));
+			g_surface->DrawOutlinedRect(rect.left, rect.top, rect.right, rect.bottom);
 		}
 
 		if (config.visuals_health)
 		{
-			drawmanager->add_rect({ rect.left, rect.bottom + 2 },
-				{ rect.left + (rect.right - rect.left) / 100.f * player->get_health(), rect.bottom + 2 },
-				get_health_color(player->get_health()));
+			g_surface->DrawSetColor(get_health_color(player->get_health()));
+			g_surface->DrawOutlinedRect(rect.left, rect.bottom + 2,
+				rect.left + (rect.right - rect.left) / 100.f * player->get_health(), rect.bottom + 2);
 		}
 
 		if (config.visuals_snapline)
 		{
-			drawmanager->add_line(ImVec2(screen_width / 2.f, screen_height),
-				ImVec2(rect.left + (rect.right - rect.left) / 2.f, rect.bottom), ImColor(255, 255, 255, 255));
+			g_surface->DrawSetColor(255, 255, 255, 255);
+			g_surface->DrawLine(screen_width / 2.f, screen_height, rect.left + (rect.right - rect.left) / 2.f, rect.bottom);
 		}
 
+		wchar_t buf[128];
 		if (config.visuals_name)
 		{
-			drawmanager->add_text({ rect.left, rect.top - 16 }, ImColor(255, 255, 255, 255), info.szName);
+			if (MultiByteToWideChar(CP_UTF8, 0, info.szName, -1, buf, 128) > 0)
+			{
+				int w, h;
+				g_surface->GetTextSize(courier_new, buf, w, h);
+				render_text(rect.left + (rect.right - rect.left) / 2.f - (w / 2.f), rect.top - 16,
+					Color(255, 255, 255, 255), courier_new, buf);
+			}
 		}
 
 		if (config.visuals_weapon)
@@ -95,70 +121,54 @@ void cvisuals::render_players(C_CSPlayer* player)
 			if (!weapon_name)
 				weapon_name = "unknown";
 
-			drawmanager->add_text({ rect.left, rect.bottom }, ImColor(255, 255, 255, 255), weapon_name);
+			if (MultiByteToWideChar(CP_UTF8, 0, weapon_name, -1, buf, 128) > 0)
+			{
+				int w, h;
+				g_surface->GetTextSize(courier_new, buf, w, h);
+				render_text(rect.left + (rect.right - rect.left) / 2.f - (w / 2.f), rect.bottom + 1,
+					Color(255, 255, 255, 255), courier_new, buf);
+			}
 		}
 	}
-
-	//Vector mins, maxs;
-	//Vector pos, top;
-	//player->GetRenderBounds(mins, maxs);
-	//const auto pos3_d = player->get_origin();
-	//const auto top3_d = pos3_d + Vector(0, 0, maxs.z);
-
-	//if (g_debugoverlay->ScreenPosition(pos3_d, pos) || g_debugoverlay->ScreenPosition(top3_d, top))
-	//	return;
-
-	//const auto height = (pos.y - top.y);
-	//const auto width = height / 4.f;
-
-	//if (config.visuals_box)
-	//{
-	//	drawmanager->add_rect({ top.x - width, top.y }, { top.x + width, top.y + height }, get_player_color(player));
-	//	drawmanager->add_rect({ top.x - width - 1, top.y - 1 }, { top.x + width + 1, top.y + height + 1 }, ImColor(0, 0, 0, 255));
-	//	drawmanager->add_rect({ top.x - width + 1, top.y + 1 }, { top.x + width - 1, top.y + height - 1 }, ImColor(0, 0, 0, 255));
-	//}
-
-	//if (config.visuals_health)
-	//{
-	//	float pos = height - (float)((player->get_health() * height) / 100);
-	//	drawmanager->add_filled_rect({ top.x - width - 6, top.y + pos }, { top.x - width - 2, top.y + height }, get_health_color(player->get_health()));
-	//	drawmanager->add_rect({ top.x - width - 6 , top.y }, { top.x - width - 2, top.y + height }, ImColor(0, 0, 0, 255));
-	//}
-
-	//if (config.visuals_snapline)
-	//{
-	//	int screen_width, screen_height;
-	//	g_engine->GetScreenSize(screen_width, screen_height);
-
-	//	drawmanager->add_line({ screen_width / 2.f, (float)screen_height }, { top.x, top.y + height }, ImColor(255, 255, 255, 255));
-	//}
-
-	//if (config.visuals_name)
-	//{
-	//	drawmanager->add_text({ top.x, top.y - 16 }, ImColor(255, 255, 255, 255), info.szName);
-	//}
-
-	//if (config.visuals_weapon)
-	//{
-	//	drawmanager->add_text({ top.x, top.y + height }, ImColor(255, 255, 255, 255), weapondata->weaponname);
-	//}
 }
 
-ImColor cvisuals::get_player_color(C_CSPlayer* pEntity)
+void cvisuals::render_spread_circle()
+{
+	if (!config.visuals_spread_circle)
+		return;
+
+	auto local_player = reinterpret_cast<C_CSPlayer*>(g_entitylist->GetClientEntity(g_engine->GetLocalPlayer()));
+	if (!local_player)
+		return;
+
+	auto weapon = local_player->GetActiveWeapon();
+	if (!weapon)
+		return;
+
+	const auto accuracy = weapon->GetInaccuracy() * 550.f; //3000
+
+	int screen_w, screen_h;
+	g_surface->GetScreenSize(screen_w, screen_h);
+
+	g_surface->DrawSetColor(255, 0, 0, 255);
+	g_surface->DrawOutlinedCircle(screen_w / 2, screen_h / 2, accuracy, 360);
+}
+
+Color cvisuals::get_player_color(C_CSPlayer* pEntity)
 {
 	if (pEntity->get_team_num() == 2)
 		return entity::is_visible(pEntity, 12) ? config.colors_esp_visible_t : config.colors_esp_t;
-	else if (pEntity->get_team_num() == 3)
+	if (pEntity->get_team_num() == 3)
 		return entity::is_visible(pEntity, 12) ? config.colors_esp_visible_ct : config.colors_esp_ct;
 
-	return ImColor();
+	return Color();
 }
 
-ImColor cvisuals::get_health_color(int health)
+Color cvisuals::get_health_color(int health)
 {
 	health = max(0, min(health, 100));
 
-	return ImColor(min((510 * (100 - health)) / 100, 255), min((510 * health) / 100, 255), 0, 255);
+	return Color(min((510 * (100 - health)) / 100, 255), min((510 * health) / 100, 255), 0, 255);
 }
 
 bool cvisuals::get_bounding_box(C_BasePlayer* entity, rect_s& rect)

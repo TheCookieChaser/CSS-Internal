@@ -90,9 +90,6 @@
     <ClCompile Include="tools\config.cpp">
       <Filter>Source Files\tools</Filter>
     </ClCompile>
-    <ClCompile Include="tools\draw_manager.cpp">
-      <Filter>Source Files\tools</Filter>
-    </ClCompile>
     <ClCompile Include="tools\entity.cpp">
       <Filter>Source Files\tools</Filter>
     </ClCompile>
@@ -146,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="SDK\IEngineTrace.cpp">
       <Filter>sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\Paint.cpp">
+      <Filter>Source Files\hooks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,9 +233,6 @@
     <ClInclude Include="tools\config.h">
       <Filter>Header Files\tools</Filter>
     </ClInclude>
-    <ClInclude Include="tools\draw_manager.h">
-      <Filter>Header Files\tools</Filter>
-    </ClInclude>
     <ClInclude Include="tools\entity.h">
       <Filter>Header Files\tools</Filter>
     </ClInclude>
@@ -300,6 +297,9 @@
       <Filter>sdk</Filter>
     </ClInclude>
     <ClInclude Include="SDK\vphysics_interface.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\ISurface.h">
       <Filter>sdk</Filter>
     </ClInclude>
   </ItemGroup>

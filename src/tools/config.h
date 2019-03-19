@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <json/single_include/nlohmann/json.hpp>
-#include <imgui/imgui.h>
+#include "../sdk/Color.h"
 
 struct config_s
 {
@@ -15,8 +15,10 @@ struct config_s
 	float aimbot_smooth = 0;
 	int aimbot_hitbox = 0;
 	bool aimbot_silent = false;
+	bool aimbot_psilent = false;
 	bool aimbot_autofire = false;
 	bool aimbot_nospread = false;
+	float aimbot_mindmg = 20;
 	bool aimbot_on_key = false;
 	int aimbot_key = 0;
 
@@ -26,9 +28,10 @@ struct config_s
 	bool visuals_snapline = false;
 	bool visuals_name = false;
 	bool visuals_weapon = false;
-	bool visuals_triggerbot_seed = false;
 	bool visuals_triggerbot_hitbox = false;
 	bool visuals_triggerbot_hit_point = false;
+	bool visuals_spread_circle = false;
+	bool visuals_no_flash = false;
 
 	bool misc_autojump = false;
 	int misc_triggerbot = 0;
@@ -36,11 +39,11 @@ struct config_s
 	int misc_triggerbot_key = 0;
 	bool misc_triggerbot_filter[6]{ false, false, false, false, false, false };
 
-	ImColor colors_esp_t = ImColor(163, 33, 13, 255);
-	ImColor colors_esp_ct = ImColor(0, 84, 181, 255);
-	ImColor colors_esp_visible_t = ImColor(255, 208, 0, 255);
-	ImColor colors_esp_visible_ct = ImColor(91, 219, 0, 255);
-	ImColor colors_watermark = ImColor(150, 255, 150, 255);
+	Color colors_esp_t = Color(163, 33, 13, 255);
+	Color colors_esp_ct = Color(0, 84, 181, 255);
+	Color colors_esp_visible_t = Color(255, 208, 0, 255);
+	Color colors_esp_visible_ct = Color(91, 219, 0, 255);
+	Color colors_watermark = Color(0, 255, 0, 255);
 };
 
 extern config_s config;

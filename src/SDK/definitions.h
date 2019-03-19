@@ -353,3 +353,9 @@ enum
 	CBaseGrenade = 11,
 	CBaseCombatWeapon = 5,
 };
+
+typedef enum
+{
+	Primary_Mode = 0,
+	Secondary_Mode,
+} SDKWeaponMode;

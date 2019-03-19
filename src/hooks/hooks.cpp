@@ -3,12 +3,14 @@
 cvmt_hook* d3ddevice_table = nullptr;
 cvmt_hook* client_table = nullptr;
 cvmt_hook* input_table = nullptr;
+cvmt_hook* enginevgui_table = nullptr;
 
 Reset_fn			o_reset = nullptr;
 EndScene_fn			o_end_scene = nullptr;
 CreateMove_fn		o_create_move = nullptr;
 FrameStageNotify_fn	o_frame_stage_notify = nullptr;
 GetUserCmd_fn		o_get_user_cmd = nullptr;
+Paint_fn			o_paint = nullptr;
 
 void initialize_hooks()
 {
@@ -27,6 +29,9 @@ void initialize_hooks()
 
 	input_table = new cvmt_hook(g_input);
 	o_get_user_cmd = input_table->hook<GetUserCmd_fn>(8, reinterpret_cast<void*>(get_user_cmd));
+
+	enginevgui_table = new cvmt_hook(g_enginevgui);
+	o_paint = enginevgui_table->hook<Paint_fn>(13, reinterpret_cast<void*>(paint));
 }
 
 void uninitialize_hooks()
@@ -36,4 +41,5 @@ void uninitialize_hooks()
 	delete d3ddevice_table;
 	delete client_table;
 	delete input_table;
+	delete enginevgui_table;
 }

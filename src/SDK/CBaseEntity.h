@@ -71,6 +71,7 @@ public:
 	NETVAR(get_eye_angles, "CCSPlayer", "m_angEyeAngles[0]", Vector);
 	NETVAR(get_armor_value, "CCSPlayer", "m_ArmorValue", int);
 	NETVAR(get_has_helmet, "CCSPlayer", "m_bHasHelmet", bool);
+	NETVAR(get_flash_max_alpha, "CCSPlayer", "m_flFlashMaxAlpha", float);
 };
 
 #define MAX_WEAPON_STRING	80
@@ -212,21 +213,19 @@ public:
 class C_BaseCombatWeapon : public C_BaseEntity
 {
 public:
+	NETVAR(get_clip, "CBaseCombatWeapon", "m_iClip1", int);
 	NETVAR(get_next_primary_attack, "CBaseCombatWeapon", "m_flNextPrimaryAttack", float);
+	NETVAR(get_weapon_mode, "CWeaponCSBase", "m_weaponMode", int);
+	NETVAR(get_accuracy_penalty, "CWeaponCSBase", "m_fAccuracyPenalty", float);
 
-	int Clip1()
+	bool IsFullAuto()
 	{
-		return get_vfunc<int(__thiscall*)(void*)>(this, 320)(this);
+		return get_vfunc<bool(__thiscall*)(void*)>(this, 363)(this);
 	}
 
 	int GetWeaponID()
 	{
 		return get_vfunc<int(__thiscall*)(void*)>(this, 365)(this);
-	}
-
-	bool IsFullAuto()
-	{
-		return get_vfunc<bool(__thiscall*)(void*)>(this, 363)(this);
 	}
 
 	float GetInaccuracy()
@@ -242,11 +241,6 @@ public:
 	void UpdateAccuracyPenalty()
 	{
 		return get_vfunc<void(__thiscall*)(void*)>(this, 378)(this);
-	}
-
-	float& GetAccuracyPenalty()
-	{
-		return *reinterpret_cast<float*>(reinterpret_cast<std::uintptr_t>(this) + 0x930);
 	}
 
 	CCSWeaponInfo* GetWpnData()

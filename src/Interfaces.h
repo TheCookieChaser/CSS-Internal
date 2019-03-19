@@ -17,13 +17,15 @@ extern IEngineTrace*		g_trace;
 extern IVDebugOverlay*		g_debugoverlay;
 extern ICvar*				g_cvar;
 extern IPhysicsSurfaceProps* g_physprops;
+extern CEngineVGui*			g_enginevgui;
+extern ISurface*			g_surface;
 //------------------------------------------//
 // Pattern Scan
 //------------------------------------------//
 extern CInput*				g_input;
 extern CBaseClientState*	g_clientstate;
 extern IDirect3DDevice9*	g_d3ddevice;
-extern CGlobalVars*			g_globalvars;
+extern CGlobalVars*			g_globals;
 extern IMoveHelper*			g_movehelper;
 //------------------------------------------//
 // Initialize Interfaces

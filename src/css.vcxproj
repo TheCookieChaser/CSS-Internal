@@ -91,6 +91,7 @@
     <ClCompile Include="hooks\FrameStageNotify.cpp" />
     <ClCompile Include="hooks\GetUserCmd.cpp" />
     <ClCompile Include="hooks\hooks.cpp" />
+    <ClCompile Include="hooks\Paint.cpp" />
     <ClCompile Include="hooks\Reset.cpp" />
     <ClCompile Include="hooks\WndProc.cpp" />
     <ClCompile Include="hooks\WriteUsercmdDeltaToBuffer.cpp" />
@@ -107,7 +108,6 @@
     <ClCompile Include="SDK\Vector2D.cpp" />
     <ClCompile Include="SDK\VMatrix.cpp" />
     <ClCompile Include="tools\config.cpp" />
-    <ClCompile Include="tools\draw_manager.cpp" />
     <ClCompile Include="tools\entity.cpp" />
     <ClCompile Include="tools\game.cpp" />
     <ClCompile Include="tools\math.cpp" />
@@ -148,6 +148,7 @@
     <ClInclude Include="SDK\player_info.h" />
     <ClInclude Include="SDK\sdk.h" />
     <ClInclude Include="SDK\studio.h" />
+    <ClInclude Include="SDK\ISurface.h" />
     <ClInclude Include="SDK\UtlBuffer.h" />
     <ClInclude Include="SDK\UtlMemory.h" />
     <ClInclude Include="SDK\UtlString.h" />
@@ -157,7 +158,6 @@
     <ClInclude Include="SDK\VMatrix.h" />
     <ClInclude Include="SDK\vphysics_interface.h" />
     <ClInclude Include="tools\config.h" />
-    <ClInclude Include="tools\draw_manager.h" />
     <ClInclude Include="tools\entity.h" />
     <ClInclude Include="tools\fnv_hash.h" />
     <ClInclude Include="tools\game.h" />

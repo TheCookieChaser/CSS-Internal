@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../sdk/sdk.h"
+#include "../SDK/sdk.h"
 #include <iostream>
 #include <algorithm>
 
